@@ -70,3 +70,13 @@ def channelsToRegions(df_channels):
     df_regional.columns = ['Frontal','Temporal','Centro-parietal','Occipital']
 
     return df_regional
+
+def readPSDFiles(exp_folder,psd_folder):
+    dir_inprogress = os.path.join(psd_folder,exp_folder)
+    _, b_names = readFiles(dir_inprogress,".xlsx")
+
+    condition = [None]*len(b_names)
+    for i in range(len(b_names)):
+        condition[i] = b_names[i].split("_psd_", 1)
+    
+    return [dir_inprogress,b_names,condition]
