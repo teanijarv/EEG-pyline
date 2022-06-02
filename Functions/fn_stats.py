@@ -2,8 +2,7 @@ import numpy as np
 from scipy import stats
 import pandas as pd
 
-def pairedTtest(df_psd):
-    conditions = df_psd['Condition'].unique()
+def paired_Ttest(df_psd,conditions):
     bands = df_psd['Frequency band'].unique()
     regions = df_psd.drop(columns=['Subject','Frequency band','Condition']).columns.to_numpy()
     df_pvals = pd.DataFrame(index=regions, columns=bands)
@@ -18,7 +17,6 @@ def pairedTtest(df_psd):
         for region in df_psd_band_cond1.columns:
             _,df_pvals[band][region] = stats.ttest_rel(df_psd_band_cond1[region], df_psd_band_cond2[region])
 
-        
         sign_idx = df_pvals.index[df_pvals[band]<=0.05].to_numpy()
         sign_pvals = df_pvals[df_pvals[band]<=0.05][band].to_numpy()
         if len(sign_idx) != 0:
