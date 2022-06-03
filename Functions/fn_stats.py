@@ -20,9 +20,8 @@ def paired_Ttest(df_psd,conditions):
         sign_idx = df_pvals.index[df_pvals[band]<=0.05].to_numpy()
         sign_pvals = df_pvals[df_pvals[band]<=0.05][band].to_numpy()
         if len(sign_idx) != 0:
-            print('Significant changes of',band,'are:')
+            print('Significant changes of',band,'are at',sign_idx)
         for i in range(len(sign_idx)):
-            print(sign_idx[i],'with p-value of',sign_pvals[i])
             significant_locs = np.append(significant_locs,{band: sign_idx[i]})
 
     return [df_pvals,significant_locs]
