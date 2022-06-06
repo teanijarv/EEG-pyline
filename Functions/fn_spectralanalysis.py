@@ -6,7 +6,7 @@ import numpy as np
 from scipy import stats
 
 # ========== Functions ==========
-def calculatePSD(epochs,subjectname,epo_duration=5):
+def calculate_psd(epochs,subjectname,epo_duration=5):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
 
@@ -44,7 +44,7 @@ def calculatePSD(epochs,subjectname,epo_duration=5):
     # Plot average PSD for all epochs and channels (only for plot)
     psds_mean_all = psds.mean(axis=(0, 1))
 
-    sns.set()
+    sns.set_style("darkgrid",{'font.family': ['sans-serif']})
     plt.figure()
     plt.plot(freqs,psds_mean_all)
     plt.fill_between(freqs,psds_mean_all)
@@ -53,11 +53,10 @@ def calculatePSD(epochs,subjectname,epo_duration=5):
     plt.title("PSD ({})".format(subjectname))
     plt.xlim(1,40)
     plt.ylim(0,1.1*max(psds_mean_all))
-    plt.grid()
 
     return [psds,freqs]
 
-def signalQualityCheck(psds,freqs,band,b_name,subjectname,epochs):
+def siqnal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
     """
     Plot topographically PSD values and calculate median absolute deviation
     for the first and second half of the signal for signal reliability control.
@@ -125,7 +124,7 @@ def signalQualityCheck(psds,freqs,band,b_name,subjectname,epochs):
     vmin = min([min(psd_band_mean_ch_p1),min(psd_band_mean_ch_p2)])
     vmax = max([max(psd_band_mean_ch_p1),max(psd_band_mean_ch_p2)])
 
-    sns.set()
+    sns.set_style("white",{'font.family': ['sans-serif']})
     fig,(ax1,ax2) = plt.subplots(ncols=2)
     fig.suptitle("Quality control for {} ({})".format(b_name,subjectname),y=1.1,x=0.575)
     im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p1,epochs.info,axes=ax1,vmin=vmin,vmax=vmax,show=False)
@@ -142,7 +141,7 @@ def signalQualityCheck(psds,freqs,band,b_name,subjectname,epochs):
 
     return psd_max_mad_error
 
-def bandpowerPerChannel(psds,freqs,band,b_name,subjectname,epochs):
+def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs):
     """
     Find frequency band power in interest for all the channels.
 
@@ -160,7 +159,7 @@ def bandpowerPerChannel(psds,freqs,band,b_name,subjectname,epochs):
     psd_band_mean_ch: An array for a frequency band power values for all the channels.
     """
     # Calculate the MAD error (z-score) of the bandpower to be sure of the quality
-    psd_max_mad_error = signalQualityCheck(psds,freqs,band,b_name,subjectname,epochs)
+    psd_max_mad_error = siqnal_quality_check(psds,freqs,band,b_name,subjectname,epochs)
     
     low, high = band
     psds_all_channels = psds.mean(axis=(0))
@@ -168,10 +167,10 @@ def bandpowerPerChannel(psds,freqs,band,b_name,subjectname,epochs):
     psd_band_ch = psds_all_channels[:,idx_band]
     psd_band_mean_ch = psd_band_ch.mean(axis=(1))
 
-    # If the error is larger than 2, print it as a result (visual inspection)
-    if psd_max_mad_error < 2:
-        print(subjectname,b_name,"MAD error is OK:",psd_max_mad_error)
-    else:
-        print(subjectname,b_name,"MAD error is NOT OK:",psd_max_mad_error)
+    # # If the error is larger than 2, print it as a result (visual inspection)
+    # if psd_max_mad_error < 2:
+    #     print(subjectname,b_name,"MAD error is OK:",psd_max_mad_error)
+    # else:
+    #     print(subjectname,b_name,"MAD error is NOT OK:",psd_max_mad_error)
 
     return psd_band_mean_ch

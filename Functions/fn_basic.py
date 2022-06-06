@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # ========== Functions ==========
-def readFiles(dir_inprogress,filetype):
+def read_files(dir_inprogress,filetype):
     """
     Get all the EEG file directories and subject names.
 
@@ -27,7 +27,7 @@ def readFiles(dir_inprogress,filetype):
 
     return [file_dirs, subject_names]
 
-def arrayToDataframe(subjectname,epochs,array_channels):
+def array_to_df(subjectname,epochs,array_channels):
     """
     Convert channel-based array to Pandas dataframe with channels' and subjects' names.
 
@@ -48,7 +48,7 @@ def arrayToDataframe(subjectname,epochs,array_channels):
 
     return df_channels
 
-def channelsToRegions(df_channels):
+def df_channels_to_regions(df_channels):
     """
     Convert channel-based dataframe to region-based dataframe.
 
@@ -71,9 +71,23 @@ def channelsToRegions(df_channels):
 
     return df_regional
 
-def readPSDFiles(exp_folder,psd_folder):
+def read_excel_psd(exp_folder,psd_folder):
+    """
+    Get all power spectrum density file directories and corresponding bands and experiment conditions.
+
+    Parameters
+    ----------
+    exp_folder: A string with a relative directory to experiment folder (e.g. 'Eyes Closed\Baseline')
+    psd_folder: A string with a relative directory to the results folder (e.g. 'Results\PSD\regions')
+
+    Returns
+    -------
+    dir_inprogress: A string with directory to look for files
+    b_names: A list of strings for frequency bands of the files
+    condition: A list of strings for experiment conditions of the files
+    """
     dir_inprogress = os.path.join(psd_folder,exp_folder)
-    _, b_names = readFiles(dir_inprogress,".xlsx")
+    _, b_names = read_files(dir_inprogress,".xlsx")
 
     condition = [None]*len(b_names)
     for i in range(len(b_names)):

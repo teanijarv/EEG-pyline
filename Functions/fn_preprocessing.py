@@ -3,7 +3,7 @@ import mne
 from autoreject import (get_rejection_threshold, AutoReject)
 
 # ========== Functions ==========
-def filterRawData(raw,l_freq=0.5,h_freq=50,eog_remove=True):
+def filter_raw_data(raw,l_freq=0.5,h_freq=50,eog_remove=True):
     """
     Apply FIR bandpass filter and remove EOG noise.
 
@@ -28,7 +28,7 @@ def filterRawData(raw,l_freq=0.5,h_freq=50,eog_remove=True):
 
     return filt
 
-def artefactRejection(filt,subjectname,epo_duration=5):
+def artefact_rejection(filt,subjectname,epo_duration=5):
     """
     Convert Raw file to Epochs and conduct artefact rejection/augmentation on the signal.
 

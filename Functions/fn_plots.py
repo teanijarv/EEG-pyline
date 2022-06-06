@@ -1,3 +1,4 @@
+# ========== Packages ==========
 import mne, os
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -6,7 +7,21 @@ import pandas as pd
 from statannotations.Annotator import Annotator
 from Functions.fn_stats import *
 
-def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,fnt=['sans-serif',8,10],export=False):
+# ========== Functions ==========
+def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,fnt=['sans-serif',8,10],title=True,export=False):
+    """
+    Plot topographical maps for a frequency band in interest.
+
+    Parameters
+    ----------
+    df_psd_ch: A Pandas dataframe of the power spectra values for all the channels.
+    epochs: Epochs-type (MNE-Python) EEG file
+    b_name: A string for the frequency band in interest
+    condition_legend: A list of strings for the experiment conditions plotted
+    conditions (optional): A list of strings for experiment conditions codes (takes all if not applied)
+    fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
+    export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
+    """
     sns.set_style("white",{'font.family': [fnt[0]]})
     
     if conditions == None:
@@ -44,7 +59,8 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
         title_x = 0.525
         title_y = 0.825
 
-    fig.suptitle('Average PSD across all subjects ({})'.format(b_name),x=title_x,y=title_y,fontsize=fnt[1])
+    if title == True:
+        fig.suptitle('Average PSD across all subjects ({})'.format(b_name),x=title_x,y=title_y,fontsize=fnt[1])
     clb_ax = fig.add_axes([clb_x_start, clb_y_start, clb_x_width, clb_y_height])
     clb = fig.colorbar(im, cax=clb_ax)
     clb.ax.set_ylabel('µV\u00b2/Hz',fontsize=fnt[1])
@@ -58,19 +74,35 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
             pass
         plt.savefig('Results\psdtopo_{}_{}.tiff'.format(b_name,conditions),dpi=300,bbox_inches='tight')
 
-def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],stat_test='t-test_paired',ast_loc='inside',export=False):
+def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],title=True,stat_test='Wilcoxon',ast_loc='inside',export=False):
+    """
+    Plot boxplot for power spectra values at a location (region or channel) of interest.
+
+    Parameters
+    ----------
+    df_psd: A Pandas dataframe of the power spectra values (for all the channels or regions)
+    bands: A list of strings for all the frequency bands in interest (e.g. ['Delta','Alpha'])
+    region: A string for the region/channel in interest (e.g. 'Fp1')
+    condition_comp_list: A list of strings for experiment conditions codes to compare (e.g. [['EC_00','EC_06'],['EC_06','EC_07']])
+    condition_legend: A list of strings for the experiment conditions plotted
+    fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
+    stat_test (optional): A string for the statistical test for comparison (default: 'Wilcoxon')
+    ast_loc (optional): A string for placement of asterix for statistical comparison (default: 'inside')
+    export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
+    """
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
     x='Frequency band'
     hue='Condition'
+    conditions = df_psd['Condition'].unique()
 
     plt.figure(dpi=100)
     ax = sns.boxplot(x=x, y=region, hue=hue, order=bands, data=df_psd,
                      flierprops=dict(markerfacecolor = '0.5', markersize = 3))
     
     pairs = []
-    if stat_test=='t-test_paired':
+    if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
         for i in range(len(condition_comp_list)):
-            _,significant = paired_Ttest(df_psd[['Subject','Frequency band','Condition',region]],condition_comp_list[i])
+            _,significant = apply_stat_test(df_psd[['Subject','Frequency band','Condition',region]],condition_comp_list[i],stat_test=stat_test)
             for j in range(len(significant)):
                 sign_temp = list(significant[j].keys())[0]
                 for s in range(len(bands)):
@@ -89,10 +121,11 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     for i in range(len(condition_legend)):
         ax.legend_.texts[i].set_text(condition_legend[i])
 
-    if ast_loc == 'outside':
-        ax.set_title('{} bandpowers boxplot'.format(region),y=1.125,fontsize=fnt[2])
-    else:
-        ax.set_title('{} bandpowers boxplot'.format(region),y=1.025,fontsize=fnt[2])
+    if title == True:
+        if ast_loc == 'outside':
+            ax.set_title('{} bandpowers boxplot'.format(region),y=1.125,fontsize=fnt[2])
+        else:
+            ax.set_title('{} bandpowers boxplot'.format(region),y=1.025,fontsize=fnt[2])
 
     ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
     plt.tick_params(axis='both', which='major', labelsize=fnt[2])
@@ -104,12 +137,28 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
             os.makedirs(r"Results")
         except FileExistsError:
             pass
-        plt.savefig('Results\psdboxplt_{}_{}_{}.tiff'.format(region,bands,stat_test),dpi=300,bbox_inches='tight')
+        plt.savefig('Results\psdboxplt_{}_{}_{}_{}.tiff'.format(region,bands,stat_test,conditions),dpi=300,bbox_inches='tight')
     
-def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],stat_test='t-test_paired',ast_loc='inside',export=False):
+def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],title=True,stat_test='Wilcoxon',ast_loc='inside',export=False):
+    """
+    Plot boxplot for power spectra values for a specific frequency band of interest at regions/channels.
+
+    Parameters
+    ----------
+    df_psd: A Pandas dataframe of the power spectra values (for all the channels or regions)
+    regions: A list of strings for all the regions/channels in interest (e.g. ['Fz','Fp1'])
+    band: A string for the frequency band in interest (e.g. 'Alpha')
+    condition_comp_list: A list of strings for experiment conditions codes to compare (e.g. [['EC_00','EC_06'],['EC_06','EC_07']])
+    condition_legend: A list of strings for the experiment conditions plotted
+    fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
+    stat_test (optional): A string for the statistical test for comparison (default: 'Wilcoxon')
+    ast_loc (optional): A string for placement of asterix for statistical comparison (default: 'inside')
+    export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
+    """
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
     x = 'Region'
     hue = 'Condition'
+    conditions = df_psd['Condition'].unique()
     
     df_psd_band = df_psd[df_psd['Frequency band'] == band]
     df_psd_band_final = pd.DataFrame()
@@ -124,9 +173,9 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
                      flierprops=dict(markerfacecolor = '0.5', markersize = 3))
     
     pairs = []
-    if stat_test=='t-test_paired':
+    if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
         for i in range(len(condition_comp_list)):
-            _,significant = paired_Ttest(df_psd[df_psd['Frequency band']==band],condition_comp_list[i])
+            _,significant = apply_stat_test(df_psd[df_psd['Frequency band']==band],condition_comp_list[i],stat_test=stat_test)
             for j in range(len(significant)):
                 sign_temp = list(significant[j].values())[0]
                 for s in range(len(regions)):
@@ -138,26 +187,28 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     if len(pairs) != 0:
         annotator = Annotator(ax,pairs=pairs,data=df_psd_band_final, x=x, y=band,
                         hue=hue,plot="boxplot",order=regions)\
-                .configure(test=stat_test,text_format='star',loc=ast_loc,text_offset=2)\
+                .configure(test=stat_test,text_format='star',loc=ast_loc)\
                 .apply_and_annotate()
     
     plt.legend(title='Condition', title_fontsize=fnt[2],fontsize=fnt[1])
     for i in range(len(condition_legend)):
         ax.legend_.texts[i].set_text(condition_legend[i])
-
-    if ast_loc == 'outside':
-        ax.set_title('{} power regional boxplot'.format(band),y=1.125,fontsize=fnt[2])
-    else:
-        ax.set_title('{} power regional boxplot'.format(band),y=1.025,fontsize=fnt[2])
+    
+    if title == True:
+        if ast_loc == 'outside':
+            ax.set_title('{} power regional boxplot'.format(band),y=1.125,fontsize=fnt[2])
+        else:
+            ax.set_title('{} power regional boxplot'.format(band),y=1.025,fontsize=fnt[2])
     
     ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
     plt.tick_params(axis='both', which='major', labelsize=fnt[2])
     plt.xlabel(x, fontsize=fnt[1])
     plt.ylabel('PSD (µV\u00b2/Hz)', fontsize=fnt[1])
+    #plt.legend(loc='upper left', bbox_to_anchor=(1.03, 1))
 
     if export == True:
         try:
             os.makedirs(r"Results")
         except FileExistsError:
             pass
-        plt.savefig('Results\psdboxplt_{}_{}_{}.tiff'.format(band,regions,stat_test),dpi=300,bbox_inches='tight')
+        plt.savefig('Results\psdboxplt_{}_{}_{}_{}.tiff'.format(band,regions,stat_test,conditions),dpi=300,bbox_inches='tight')
