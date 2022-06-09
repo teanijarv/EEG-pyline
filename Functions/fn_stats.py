@@ -20,7 +20,9 @@ def apply_stat_test(df_psd,conditions,stat_test):
     """
     bands = df_psd['Frequency band'].unique()
     regions = df_psd.drop(columns=['Subject','Frequency band','Condition']).columns.to_numpy()
+    df_desc = pd.DataFrame()
     df_pvals = pd.DataFrame(index=regions, columns=bands)
+    df_statistic = pd.DataFrame(index=regions, columns=bands)
     significant_locs = []
 
     for band in bands:
@@ -29,18 +31,24 @@ def apply_stat_test(df_psd,conditions,stat_test):
                                 .drop(columns=['Subject','Frequency band','Condition'])
         df_psd_band_cond2 = df_psd_band[df_psd_band['Condition'] == conditions[1]]\
                                 .drop(columns=['Subject','Frequency band','Condition'])
+
+        df_cond1_desc = df_psd_band_cond1.describe().add_suffix('_'+band+'_'+conditions[0])
+        df_cond2_desc = df_psd_band_cond2.describe().add_suffix('_'+band+'_'+conditions[1])
+        df_desc = pd.concat([df_desc, pd.concat([df_cond1_desc, df_cond2_desc], axis=1)], axis=1)
+
         for region in df_psd_band_cond1.columns:
             if stat_test=='t-test_paired':
-                _,df_pvals[band][region] = stats.ttest_rel(df_psd_band_cond1[region], df_psd_band_cond2[region])
+                df_statistic[band][region],df_pvals[band][region] = stats.ttest_rel(df_psd_band_cond1[region], df_psd_band_cond2[region])
             elif stat_test=='Wilcoxon':
-                _,df_pvals[band][region] = stats.wilcoxon(df_psd_band_cond1[region], df_psd_band_cond2[region])
+                df_statistic[band][region],df_pvals[band][region] = stats.wilcoxon(df_psd_band_cond1[region], df_psd_band_cond2[region])
             else:
                 print('No valid statistical test chosen')
+        
         sign_idx = df_pvals.index[df_pvals[band]<=0.05].to_numpy()
-        sign_pvals = df_pvals[df_pvals[band]<=0.05][band].to_numpy()
+        #sign_pvals = df_pvals[df_pvals[band][1]<=0.05][band].to_numpy()
         if len(sign_idx) != 0:
             print(conditions,'Significant changes of',band,'are at',sign_idx)
         for i in range(len(sign_idx)):
             significant_locs = np.append(significant_locs,{band: sign_idx[i]})
 
-    return [df_pvals,significant_locs]
+    return [df_desc,df_pvals,df_statistic,significant_locs]

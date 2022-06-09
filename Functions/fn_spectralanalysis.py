@@ -124,20 +124,21 @@ def siqnal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
     vmin = min([min(psd_band_mean_ch_p1),min(psd_band_mean_ch_p2)])
     vmax = max([max(psd_band_mean_ch_p1),max(psd_band_mean_ch_p2)])
 
-    sns.set_style("white",{'font.family': ['sans-serif']})
-    fig,(ax1,ax2) = plt.subplots(ncols=2)
-    fig.suptitle("Quality control for {} ({})".format(b_name,subjectname),y=1.1,x=0.575)
-    im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p1,epochs.info,axes=ax1,vmin=vmin,vmax=vmax,show=False)
-    im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p2,epochs.info,axes=ax2,vmin=vmin,vmax=vmax,show=False)
-    ax1.set_title("Epochs 0-{}\nAvg MAD error = {}".format(idx_mid_epoch-1,psd_mad_error_avg[0]))
-    ax2.set_title("Epochs {}-{}\nAvg MAD error = {}".format(idx_mid_epoch,len(psds[:,0,0]),psd_mad_error_avg[1]))
-    ax_x_start = 0.95
-    ax_x_width = 0.04
-    ax_y_start = 0.1
-    ax_y_height = 0.9
-    cbar_ax = fig.add_axes([ax_x_start, ax_y_start, ax_x_width, ax_y_height])
-    clb = fig.colorbar(im, cax=cbar_ax)
-    clb.ax.set_ylabel('uV\u00b2/Hz'); 
+    if psd_max_mad_error >= 2:
+        sns.set_style("white",{'font.family': ['sans-serif']})
+        fig,(ax1,ax2) = plt.subplots(ncols=2)
+        fig.suptitle("MAD >= 2 ! Quality control for {} ({})".format(b_name,subjectname),y=1.1,x=0.575)
+        im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p1,epochs.info,axes=ax1,vmin=vmin,vmax=vmax,show=False)
+        im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p2,epochs.info,axes=ax2,vmin=vmin,vmax=vmax,show=False)
+        ax1.set_title("Epochs 0-{}\nAvg MAD error = {}".format(idx_mid_epoch-1,psd_mad_error_avg[0]))
+        ax2.set_title("Epochs {}-{}\nAvg MAD error = {}".format(idx_mid_epoch,len(psds[:,0,0]),psd_mad_error_avg[1]))
+        ax_x_start = 0.95
+        ax_x_width = 0.04
+        ax_y_start = 0.1
+        ax_y_height = 0.9
+        cbar_ax = fig.add_axes([ax_x_start, ax_y_start, ax_x_width, ax_y_height])
+        clb = fig.colorbar(im, cax=cbar_ax)
+        clb.ax.set_ylabel('uV\u00b2/Hz'); 
 
     return psd_max_mad_error
 
