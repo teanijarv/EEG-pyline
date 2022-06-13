@@ -15,7 +15,7 @@ This is an EEG pipeline used at the USC's Thompson Institute created by Toomas E
 ## Requirements
 The data processing and analysis is tested with Biosemi 32-channel EEG set. I recommend to create a [conda environment](https://www.anaconda.com/distribution/) with all the dependencies using the environment.yml file in this repository. However, down below you can see all the required libraries across parts of the pipeline in case you want to use only a specific notebook.
 
-`conda env create -n eeg-pipeline -f environment.yml`
+`conda env create -n EEG-pipeline-TI -f environment.yml`
 
 ### Pre-processing:
 - MNE
