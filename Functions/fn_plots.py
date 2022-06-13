@@ -74,7 +74,8 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
             pass
         plt.savefig('Results\psdtopo_{}_{}.tiff'.format(b_name,conditions),dpi=300,bbox_inches='tight')
 
-def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],title=True,stat_test='Wilcoxon',ast_loc='inside',export=False):
+def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
+    title=True,stat_test='Wilcoxon',ast_loc='inside',verbose=True,export=False):
     """
     Plot boxplot for power spectra values at a location (region or channel) of interest.
 
@@ -102,7 +103,7 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     pairs = []
     if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
         for i in range(len(condition_comp_list)):
-            _,_,_,significant = apply_stat_test(df_psd[['Subject','Frequency band','Condition',region]],condition_comp_list[i],stat_test=stat_test)
+            _,_,_,significant = apply_stat_test(df_psd[['Subject','Frequency band','Condition',region]],condition_comp_list[i],stat_test=stat_test,verbose=verbose)
             for j in range(len(significant)):
                 sign_temp = list(significant[j].keys())[0]
                 for s in range(len(bands)):
@@ -114,10 +115,8 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     if len(pairs) != 0:
         annotator = Annotator(ax,pairs=pairs,data=df_psd, x=x, y=region,
                             hue=hue,plot="boxplot",order=bands)\
-                .configure(test=stat_test,loc=ast_loc,text_offset=2,text_format='star')\
+                .configure(test=stat_test,loc=ast_loc,text_format='star',verbose=0)\
                 .apply_and_annotate()
-    else:
-        print('No significance found.')
         
     plt.legend(title='Condition', title_fontsize=fnt[2],fontsize=fnt[1])
     for i in range(len(condition_legend)):
@@ -141,7 +140,8 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
             pass
         plt.savefig('Results\psdboxplt_{}_{}_{}_{}.tiff'.format(region,bands,stat_test,conditions),dpi=300,bbox_inches='tight')
     
-def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],title=True,stat_test='Wilcoxon',ast_loc='inside',export=False):
+def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
+    title=True,stat_test='Wilcoxon',ast_loc='inside',verbose=True,export=False):
     """
     Plot boxplot for power spectra values for a specific frequency band of interest at regions/channels.
 
@@ -177,7 +177,7 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     pairs = []
     if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
         for i in range(len(condition_comp_list)):
-            _,_,_,significant = apply_stat_test(df_psd[df_psd['Frequency band']==band],condition_comp_list[i],stat_test=stat_test)
+            _,_,_,significant = apply_stat_test(df_psd[df_psd['Frequency band']==band],condition_comp_list[i],stat_test=stat_test,verbose=verbose)
             for j in range(len(significant)):
                 sign_temp = list(significant[j].values())[0]
                 for s in range(len(regions)):
@@ -189,10 +189,9 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     if len(pairs) != 0:
         annotator = Annotator(ax,pairs=pairs,data=df_psd_band_final, x=x, y=band,
                         hue=hue,plot="boxplot",order=regions)\
-                .configure(test=stat_test,text_format='star',loc=ast_loc)\
+                .configure(test=stat_test,text_format='star',loc=ast_loc,verbose=0)\
                 .apply_and_annotate()
-    else:
-        print('No significance found.')
+    
     plt.legend(title='Condition', title_fontsize=fnt[2],fontsize=fnt[1])
     for i in range(len(condition_legend)):
         ax.legend_.texts[i].set_text(condition_legend[i])

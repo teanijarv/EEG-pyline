@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # ========== Functions ==========
-def read_files(dir_inprogress,filetype):
+def read_files(dir_inprogress,filetype,verbose=True):
     """
     Get all the EEG file directories and subject names.
 
@@ -23,7 +23,8 @@ def read_files(dir_inprogress,filetype):
         if file.endswith(filetype):
             file_dirs.append(os.path.join(dir_inprogress, file))
             subject_names.append(os.path.join(file).removesuffix(filetype))
-    print("Files in folder:",len(file_dirs))
+    if verbose == True:
+        print("Files in folder:",len(file_dirs))
 
     return [file_dirs, subject_names]
 
@@ -71,7 +72,7 @@ def df_channels_to_regions(df_channels):
 
     return df_regional
 
-def read_excel_psd(exp_folder,psd_folder):
+def read_excel_psd(exp_folder,psd_folder,verbose=True):
     """
     Get all power spectrum density file directories and corresponding bands and experiment conditions.
 
@@ -87,7 +88,7 @@ def read_excel_psd(exp_folder,psd_folder):
     condition: A list of strings for experiment conditions of the files
     """
     dir_inprogress = os.path.join(psd_folder,exp_folder)
-    _, b_names = read_files(dir_inprogress,".xlsx")
+    _, b_names = read_files(dir_inprogress,".xlsx",verbose=verbose)
 
     condition = [None]*len(b_names)
     for i in range(len(b_names)):

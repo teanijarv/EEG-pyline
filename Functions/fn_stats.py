@@ -4,7 +4,7 @@ from scipy import stats
 import pandas as pd
 
 # ========== Functions ==========
-def apply_stat_test(df_psd,conditions,stat_test):
+def apply_stat_test(df_psd,conditions,stat_test,verbose=False):
     """
     Perform a paired t-test on dataframe with two conditions.
 
@@ -46,8 +46,8 @@ def apply_stat_test(df_psd,conditions,stat_test):
         
         sign_idx = df_pvals.index[df_pvals[band]<=0.05].to_numpy()
         #sign_pvals = df_pvals[df_pvals[band][1]<=0.05][band].to_numpy()
-        if len(sign_idx) != 0:
-            print(conditions,'Significant changes of',band,'are at',sign_idx)
+        if ((len(sign_idx) != 0) & (verbose == True)):
+            print(stat_test+':',conditions,band,'significant at',sign_idx)
         for i in range(len(sign_idx)):
             significant_locs = np.append(significant_locs,{band: sign_idx[i]})
 
