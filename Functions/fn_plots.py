@@ -75,7 +75,7 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
         plt.savefig('Results\psdtopo_{}_{}.tiff'.format(b_name,conditions),dpi=300,bbox_inches='tight')
 
 def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
-    title=True,stat_test='Wilcoxon',ast_loc='inside',verbose=True,export=False):
+    title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,verbose=True,export=False):
     """
     Plot boxplot for power spectra values at a location (region or channel) of interest.
 
@@ -95,6 +95,11 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     x='Frequency band'
     hue='Condition'
     conditions = df_psd['Condition'].unique()
+
+    fliercount = [0,0]
+    if ylims != None:
+        fliercount[0] = len(df_psd[region].values[df_psd[region] < ylims[0]])
+        fliercount[1] = len(df_psd[region].values[df_psd[region] > ylims[1]])
 
     plt.figure(dpi=100)
     ax = sns.boxplot(x=x, y=region, hue=hue, order=bands, data=df_psd,
@@ -133,6 +138,20 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     plt.xlabel(x, fontsize=fnt[1])
     plt.ylabel('PSD (µV\u00b2/Hz)', fontsize=fnt[1])
 
+    if ylims != None:
+        ax.set(ylim=ylims)
+        if flier_label_xyloc == None:
+            flier_label_xyloc = [0,0]
+            flier_label_xyloc[1] = 2
+            if len(bands) == 1:
+                flier_label_xyloc[0] = -0.05
+            else:
+                flier_label_xyloc[0] = (len(bands)-1)/2-0.15
+        if fliercount[1] != 0:
+            plt.text(flier_label_xyloc[0],ylims[1]-flier_label_xyloc[1],str(fliercount[1])+' outliers \u2191',size=fnt[1])
+        if fliercount[0] != 0:
+            plt.text(flier_label_xyloc[0],ylims[0]+flier_label_xyloc[1],str(fliercount[0])+' outliers \u2193',size=fnt[1])
+
     if export == True:
         try:
             os.makedirs(r"Results")
@@ -141,7 +160,7 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
         plt.savefig('Results\psdboxplt_{}_{}_{}_{}.tiff'.format(region,bands,stat_test,conditions),dpi=300,bbox_inches='tight')
     
 def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
-    title=True,stat_test='Wilcoxon',ast_loc='inside',verbose=True,export=False):
+    title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,verbose=True,export=False):
     """
     Plot boxplot for power spectra values for a specific frequency band of interest at regions/channels.
 
@@ -169,11 +188,16 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
         df_psd_temp.rename(columns={region: band}, inplace=True)
         df_psd_temp['Region'] = region
         df_psd_band_final = pd.concat([df_psd_band_final,df_psd_temp]).reset_index(drop=True)
+    
+    fliercount = [0,0]
+    if ylims != None:
+        fliercount[0] = len(df_psd_band_final[band].values[df_psd_band_final[band] < ylims[0]])
+        fliercount[1] = len(df_psd_band_final[band].values[df_psd_band_final[band] > ylims[1]])
 
     plt.figure(dpi=100)
     ax = sns.boxplot(x=x, y=band, hue=hue, data=df_psd_band_final, order=regions,
                      flierprops=dict(markerfacecolor = '0.5', markersize = 3))
-    
+
     pairs = []
     if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
         for i in range(len(condition_comp_list)):
@@ -190,7 +214,8 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
         annotator = Annotator(ax,pairs=pairs,data=df_psd_band_final, x=x, y=band,
                         hue=hue,plot="boxplot",order=regions)\
                 .configure(test=stat_test,text_format='star',loc=ast_loc,verbose=0)\
-                .apply_and_annotate()
+                .apply_test().annotate(line_offset_to_group=0.02, line_offset=0.02)
+                #.apply_and_annotate()
     
     plt.legend(title='Condition', title_fontsize=fnt[2],fontsize=fnt[1])
     for i in range(len(condition_legend)):
@@ -206,7 +231,20 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     plt.tick_params(axis='both', which='major', labelsize=fnt[2])
     plt.xlabel(x, fontsize=fnt[1])
     plt.ylabel('PSD (µV\u00b2/Hz)', fontsize=fnt[1])
-    #plt.legend(loc='upper left', bbox_to_anchor=(1.03, 1))
+
+    if ylims != None:
+        ax.set(ylim=ylims)
+        if flier_label_xyloc == None:
+            flier_label_xyloc = [0,0]
+            flier_label_xyloc[1] = 2
+            if len(regions) == 1:
+                flier_label_xyloc[0] = -0.05
+            else:
+                flier_label_xyloc[0] = (len(regions)-1)/2-0.15
+        if fliercount[1] != 0:
+            plt.text(flier_label_xyloc[0],ylims[1]-flier_label_xyloc[1],str(fliercount[1])+' outliers \u2191',size=fnt[1])
+        if fliercount[0] != 0:
+            plt.text(flier_label_xyloc[0],ylims[0]+flier_label_xyloc[1],str(fliercount[0])+' outliers \u2193',size=fnt[1])
 
     if export == True:
         try:
