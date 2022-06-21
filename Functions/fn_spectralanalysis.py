@@ -6,7 +6,7 @@ import numpy as np
 from scipy import stats
 
 # ========== Functions ==========
-def calculate_psd(epochs,subjectname,epo_duration=5):
+def calculate_psd(epochs,subjectname,epo_duration=2,fminmax=[1,100],window='hamming'):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
 
@@ -21,22 +21,10 @@ def calculate_psd(epochs,subjectname,epo_duration=5):
     psds: An array for power spectrum density values
     freqs: An array for corresponding frequencies
     """
-    # Set time window and frequency range
-    tmin = 0
-    tmax = epo_duration
-    fmin = 1
-    fmax = 100
-    sfreq = epochs.info['sfreq']
-
     # Calculate PSD with Welch's method
-    psds, freqs = mne.time_frequency.psd_welch(
-        epochs,
-        n_fft=int(sfreq * (tmax - tmin)),
-        n_overlap=0, n_per_seg=None,
-        tmin=tmin, tmax=tmax,
-        fmin=fmin, fmax=fmax,
-        window='boxcar',
-        verbose=False)
+    sfreq = epochs.info['sfreq']
+    psds, freqs = mne.time_frequency.psd_welch(epochs,n_fft=int(sfreq*epo_duration),
+                                               fmin=fminmax[0],fmax=fminmax[1],window=window)
 
     # Unit conversion from V^2/Hz to uV^2/Hz
     psds = psds*1e12

@@ -65,10 +65,17 @@ def df_channels_to_regions(df_channels):
     df_temporal = df_channels[['FC5','FC6','T7','T8','CP5','CP6','P7','P8']].copy().mean(axis=1)
     df_centroparietal = df_channels[['FC1','FC2','C3','C4','Cz','CP1','CP2','P3','P4','Pz']].copy().mean(axis=1)
     df_occipital = df_channels[['PO3','PO4','O1','O2','Oz']].copy().mean(axis=1)
+    df_lefthemi = df_channels[['Fp1','AF3','F3','F7','FC1','FC5','C3','T7','CP1','CP5','P3','P7','PO3','O1']].copy().mean(axis=1)
+    df_rightthemi = df_channels[['Fp2','AF4','F4','F8','FC2','FC6','C4','T8','CP2','CP6','P4','P8','PO4','O2']].copy().mean(axis=1)
+    df_fullbrain = df_channels[['Fp1','AF3','F3','F7','FC1','FC5','C3','T7','CP1','CP5','P3','P7','PO3','O1',
+                                'Fp2','AF4','F4','F8','FC2','FC6','C4','T8','CP2','CP6','P4','P8','PO4','O2',
+                                'Fz','Cz','Pz','Oz']].copy().mean(axis=1)
 
     df_regional = pd.concat([df_frontal,df_temporal,
-                                        df_centroparietal,df_occipital], axis=1)
-    df_regional.columns = ['Frontal','Temporal','Centro-parietal','Occipital']
+                             df_centroparietal,df_occipital,
+                             df_lefthemi,df_rightthemi,df_fullbrain], axis=1)
+    df_regional.columns = ['Frontal','Temporal','Centro-parietal','Occipital',
+                           'Left-hemi','Right-hemi','Full brain']
 
     return df_regional
 

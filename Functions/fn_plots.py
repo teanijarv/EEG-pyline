@@ -8,7 +8,8 @@ from statannotations.Annotator import Annotator
 from Functions.fn_stats import *
 
 # ========== Functions ==========
-def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,fnt=['sans-serif',8,10],title=True,export=False):
+def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
+                       fnt=['sans-serif',8,10],cmap=None,title=True,export=False):
     """
     Plot topographical maps for a frequency band in interest.
 
@@ -23,7 +24,7 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
     export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
     """
     sns.set_style("white",{'font.family': [fnt[0]]})
-    
+
     if conditions == None:
         conditions = df_psd_ch['Condition'].unique()
     
@@ -41,7 +42,8 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
     fig,axs = plt.subplots(nrows=1,ncols=len(conditions),dpi=100)
     
     for i in range(len(conditions)):
-        im,_ = mne.viz.plot_topomap(ar_psd_meanch_band[i],epochs.info,axes=axs[i],vmin=vmin,vmax=vmax,show=False)
+        im,_ = mne.viz.plot_topomap(ar_psd_meanch_band[i],epochs.info,axes=axs[i],
+                                    vmin=vmin,vmax=vmax,show=False,cmap=cmap)
         axs[i].set_title(condition_legend[i],fontsize=fnt[1])
 
     if len(conditions) <= 2:
@@ -75,7 +77,8 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
         plt.savefig('Results\psdtopo_{}_{}.tiff'.format(b_name,conditions),dpi=300,bbox_inches='tight')
 
 def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
-    title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,verbose=True,export=False):
+    title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,annot_offset=[0.1,0.1],
+    yscale='linear',legend=False,figsize=(6,4),palette=None,verbose=True,export=False):
     """
     Plot boxplot for power spectra values at a location (region or channel) of interest.
 
@@ -92,6 +95,7 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
     """
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
+    
     x='Frequency band'
     hue='Condition'
     conditions = df_psd['Condition'].unique()
@@ -101,9 +105,10 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
         fliercount[0] = len(df_psd[region].values[df_psd[region] < ylims[0]])
         fliercount[1] = len(df_psd[region].values[df_psd[region] > ylims[1]])
 
-    plt.figure(dpi=100)
+    plt.figure(dpi=100,figsize = figsize)
     ax = sns.boxplot(x=x, y=region, hue=hue, order=bands, data=df_psd,
-                     flierprops=dict(markerfacecolor = '0.5', markersize = 3))
+                     flierprops=dict(markerfacecolor = '0.5', markersize = 1),palette=palette)
+    ax.set_yscale(yscale)
     
     pairs = []
     if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
@@ -121,11 +126,19 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
         annotator = Annotator(ax,pairs=pairs,data=df_psd, x=x, y=region,
                             hue=hue,plot="boxplot",order=bands)\
                 .configure(test=stat_test,loc=ast_loc,text_format='star',verbose=0)\
-                .apply_and_annotate()
+                .apply_test().annotate(line_offset_to_group=annot_offset[0], line_offset=annot_offset[1])
+                #.apply_and_annotate()
         
-    plt.legend(title='Condition', title_fontsize=fnt[2],fontsize=fnt[1])
-    for i in range(len(condition_legend)):
-        ax.legend_.texts[i].set_text(condition_legend[i])
+    if legend != False:
+        if legend == True:
+            kwargs = dict(loc = 'best')
+        else:
+            kwargs = legend
+        plt.legend(title='Condition',title_fontsize=fnt[2],fontsize=fnt[1],**kwargs)
+        for i in range(len(condition_legend)):
+            ax.legend_.texts[i].set_text(condition_legend[i])
+    else:
+        ax.get_legend().remove()
 
     if title == True:
         if ast_loc == 'outside':
@@ -160,7 +173,8 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
         plt.savefig('Results\psdboxplt_{}_{}_{}_{}.tiff'.format(region,bands,stat_test,conditions),dpi=300,bbox_inches='tight')
     
 def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
-    title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,verbose=True,export=False):
+    title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,annot_offset=[0.1,0.1],
+    yscale='linear',legend=False,figsize=(6,4),palette=None,verbose=True,export=False):
     """
     Plot boxplot for power spectra values for a specific frequency band of interest at regions/channels.
 
@@ -177,6 +191,7 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
     """
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
+    
     x = 'Region'
     hue = 'Condition'
     conditions = df_psd['Condition'].unique()
@@ -194,9 +209,10 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
         fliercount[0] = len(df_psd_band_final[band].values[df_psd_band_final[band] < ylims[0]])
         fliercount[1] = len(df_psd_band_final[band].values[df_psd_band_final[band] > ylims[1]])
 
-    plt.figure(dpi=100)
+    plt.figure(dpi=100,figsize = figsize)
     ax = sns.boxplot(x=x, y=band, hue=hue, data=df_psd_band_final, order=regions,
-                     flierprops=dict(markerfacecolor = '0.5', markersize = 3))
+                     flierprops=dict(markerfacecolor = '0.5', markersize = 1),palette=palette)
+    ax.set_yscale(yscale)
 
     pairs = []
     if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
@@ -214,12 +230,19 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
         annotator = Annotator(ax,pairs=pairs,data=df_psd_band_final, x=x, y=band,
                         hue=hue,plot="boxplot",order=regions)\
                 .configure(test=stat_test,text_format='star',loc=ast_loc,verbose=0)\
-                .apply_test().annotate(line_offset_to_group=0.02, line_offset=0.02)
+                .apply_test().annotate(line_offset_to_group=annot_offset[0], line_offset=annot_offset[1])
                 #.apply_and_annotate()
     
-    plt.legend(title='Condition', title_fontsize=fnt[2],fontsize=fnt[1])
-    for i in range(len(condition_legend)):
-        ax.legend_.texts[i].set_text(condition_legend[i])
+    if legend != False:
+        if legend == True:
+            kwargs = dict(loc = 'best')
+        else:
+            kwargs = legend
+        plt.legend(title='Condition',title_fontsize=fnt[2],fontsize=fnt[1],**kwargs)
+        for i in range(len(condition_legend)):
+            ax.legend_.texts[i].set_text(condition_legend[i])
+    else:
+        ax.get_legend().remove()
     
     if title == True:
         if ast_loc == 'outside':
