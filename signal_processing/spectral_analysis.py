@@ -6,7 +6,7 @@ import numpy as np
 from scipy import stats
 
 # ========== Functions ==========
-def calculate_psd(epochs,subjectname,epo_duration=2,fminmax=[1,100],window='hamming'):
+def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_duration=2,window_overlap=0.5):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
 
@@ -22,8 +22,9 @@ def calculate_psd(epochs,subjectname,epo_duration=2,fminmax=[1,100],window='hamm
     freqs: An array for corresponding frequencies
     """
     # Calculate PSD with Welch's method
-    sfreq = epochs.info['sfreq']
-    psds, freqs = mne.time_frequency.psd_welch(epochs,n_fft=int(sfreq*epo_duration),
+    window_size = int(epochs.info['sfreq']*window_duration)
+    psds, freqs = mne.time_frequency.psd_welch(epochs,n_fft=window_size,verbose=False,
+                                               n_overlap=int(window_size*window_overlap),
                                                fmin=fminmax[0],fmax=fminmax[1],window=window)
 
     # Unit conversion from V^2/Hz to uV^2/Hz
@@ -163,3 +164,7 @@ def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs):
     #     print(subjectname,b_name,"MAD error is NOT OK:",psd_max_mad_error)
 
     return psd_band_mean_ch
+
+def calculate_asymmetry_ch(df_psd_band,left_ch,right_ch):
+    df_asymmetry = (df_psd_band[left_ch] - df_psd_band[right_ch])/(df_psd_band[left_ch] + df_psd_band[right_ch])*100
+    return df_asymmetry

@@ -65,17 +65,23 @@ def df_channels_to_regions(df_channels):
     df_temporal = df_channels[['FC5','FC6','T7','T8','CP5','CP6','P7','P8']].copy().mean(axis=1)
     df_centroparietal = df_channels[['FC1','FC2','C3','C4','Cz','CP1','CP2','P3','P4','Pz']].copy().mean(axis=1)
     df_occipital = df_channels[['PO3','PO4','O1','O2','Oz']].copy().mean(axis=1)
-    df_lefthemi = df_channels[['Fp1','AF3','F3','F7','FC1','FC5','C3','T7','CP1','CP5','P3','P7','PO3','O1']].copy().mean(axis=1)
-    df_rightthemi = df_channels[['Fp2','AF4','F4','F8','FC2','FC6','C4','T8','CP2','CP6','P4','P8','PO4','O2']].copy().mean(axis=1)
-    df_fullbrain = df_channels[['Fp1','AF3','F3','F7','FC1','FC5','C3','T7','CP1','CP5','P3','P7','PO3','O1',
-                                'Fp2','AF4','F4','F8','FC2','FC6','C4','T8','CP2','CP6','P4','P8','PO4','O2',
-                                'Fz','Cz','Pz','Oz']].copy().mean(axis=1)
-
     df_regional = pd.concat([df_frontal,df_temporal,
-                             df_centroparietal,df_occipital,
-                             df_lefthemi,df_rightthemi,df_fullbrain], axis=1)
-    df_regional.columns = ['Frontal','Temporal','Centro-parietal','Occipital',
-                           'Left-hemi','Right-hemi','Full brain']
+                             df_centroparietal,df_occipital], axis=1)
+    df_regional.columns = ['Frontal','Temporal','Centro-parietal','Occipital']
+
+    # df_left_frontal = df_channels[['Fp1','AF3','F3','F7']].copy().mean(axis=1)
+    # df_right_frontal = df_channels[['Fp2','AF4','F4','F8']].copy().mean(axis=1)
+    # df_central = df_channels[['Fz','FC1','FC2','C3','C4','Cz']].copy().mean(axis=1)
+    # df_parietal = df_channels[['CP1','CP2','P3','P4','Pz']].copy().mean(axis=1)
+    # df_left_temporal = df_channels[['FC5','T7','CP5','P7']].copy().mean(axis=1)
+    # df_right_temporal = df_channels[['FC6','T8','CP6','P8']].copy().mean(axis=1)
+    # df_occipital = df_channels[['PO3','PO4','O1','O2','Oz']].copy().mean(axis=1)
+
+    # df_regional = pd.concat([df_left_frontal,df_right_frontal,df_central,
+    #                          df_parietal,df_left_temporal,df_right_temporal,
+    #                          df_occipital], axis=1)
+    # df_regional.columns = ['Left-frontal','Right-frontal','Central','Parietal',
+    #                        'Left-temporal','Right-temporal','Occipital']
 
     return df_regional
 
@@ -102,3 +108,33 @@ def read_excel_psd(exp_folder,psd_folder,verbose=True):
         condition[i] = b_names[i].split("_psd_", 1)
     
     return [dir_inprogress,b_names,condition]
+
+def create_results_folders(exp_folder):
+    # Dummy way to try to pre-create folders for PSD results
+    try:
+        os.makedirs(os.path.join(r"Results\Absolute PSD\channels",exp_folder))
+    except FileExistsError:
+        pass
+    try:
+        os.makedirs(os.path.join(r"Results\Absolute PSD\regions",exp_folder))
+    except FileExistsError:
+        pass
+    try:
+        os.makedirs(os.path.join(r"Results\Relative PSD\channels",exp_folder))
+    except FileExistsError:
+        pass
+    try:
+        os.makedirs(os.path.join(r"Results\Relative PSD\regions",exp_folder))
+    except FileExistsError:
+        pass
+
+def export_psd_results(df_psd_band,df_rel_psd_band,exp_folder,exp_condition,band):
+    # Save the PSD values for each channel for each band in Excel format
+    df_psd_band.to_excel(r"Results\Absolute PSD\channels\{}\{}_psd_{}.xlsx".format(exp_folder,exp_condition,band))
+    df_rel_psd_band.to_excel(r"Results\Relative PSD\channels\{}\{}_rel_psd_{}.xlsx".format(exp_folder,exp_condition,band))
+
+    # Find regional band powers and save them to Excel as well
+    df_psd_band_reg = df_channels_to_regions(df_psd_band)
+    df_psd_band_reg.to_excel(r"Results\Absolute PSD\regions\{}\{}_psd_{}.xlsx".format(exp_folder,exp_condition,band))
+    df_rel_psd_band_reg = df_channels_to_regions(df_rel_psd_band)
+    df_rel_psd_band_reg.to_excel(r"Results\Relative PSD\regions\{}\{}_rel_psd_{}.xlsx".format(exp_folder,exp_condition,band))

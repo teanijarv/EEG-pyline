@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 import pandas as pd
 from statannotations.Annotator import Annotator
-from Functions.fn_stats import *
+from basic.stats import apply_stat_test
 
 # ========== Functions ==========
 def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
@@ -146,7 +146,8 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
         else:
             ax.set_title('{} bandpowers boxplot'.format(region),y=1.025,fontsize=fnt[2])
 
-    ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
+    if yscale == 'linear':
+        ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
     plt.tick_params(axis='both', which='major', labelsize=fnt[2])
     plt.xlabel(x, fontsize=fnt[1])
     plt.ylabel('PSD (µV\u00b2/Hz)', fontsize=fnt[1])
@@ -250,7 +251,8 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
         else:
             ax.set_title('{} power regional boxplot'.format(band),y=1.025,fontsize=fnt[2])
     
-    ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
+    if yscale == 'linear':
+        ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
     plt.tick_params(axis='both', which='major', labelsize=fnt[2])
     plt.xlabel(x, fontsize=fnt[1])
     plt.ylabel('PSD (µV\u00b2/Hz)', fontsize=fnt[1])
