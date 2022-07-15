@@ -11,7 +11,7 @@ from basic.stats import apply_stat_test
 def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
                        fnt=['sans-serif',8,10],cmap=None,title=True,export=False):
     """
-    Plot topographical maps for a frequency band in interest.
+    Plot topographical headmaps of power spectra data for the frequency band in interest.
 
     Parameters
     ----------
@@ -21,6 +21,8 @@ def plot_topomaps_band(df_psd_ch,epochs,b_name,condition_legend,conditions=None,
     condition_legend: A list of strings for the experiment conditions plotted
     conditions (optional): A list of strings for experiment conditions codes (takes all if not applied)
     fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
+    cmap (optional): Colormap of the heatmap (Matplotlib)
+    title (optional): A boolean for displaying the title of the plot
     export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
     """
     sns.set_style("white",{'font.family': [fnt[0]]})
@@ -80,7 +82,7 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,annot_offset=[0.1,0.1],
     yscale='linear',legend=False,figsize=(6,4),palette=None,verbose=True,export=False):
     """
-    Plot boxplot for power spectra values at a location (region or channel) of interest.
+    Plot boxplot for PSD values at a location (region or channel) of interest.
 
     Parameters
     ----------
@@ -90,8 +92,16 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     condition_comp_list: A list of strings for experiment conditions codes to compare (e.g. [['EC_00','EC_06'],['EC_06','EC_07']])
     condition_legend: A list of strings for the experiment conditions plotted
     fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
-    stat_test (optional): A string for the statistical test for comparison (default: 'Wilcoxon')
+    title (optional): A boolean for displaying the title of the plot
+    stat_test (optional): A string for the statistical test for comparison (available: 't-test_paired','Wilcoxon')
     ast_loc (optional): A string for placement of asterix for statistical comparison (default: 'inside')
+    ylims (optional): A list for y-scale limits (default: None)
+    flier_label_xyloc (optional): Custom xy location for outlier label (in case they will be out of plot range)
+    annot_offset (optional): Custom offset values for moving statistical test asterix annotations
+    yscale (optional): Scale of y-scale (available: 'linear','log')
+    legend (optional): Custom legend xy location (Matplotlib)
+    figsize (optional): Figure size (Matplotlib)
+    palette (optional): Figure color palette (Matplotlib/Seaborn)
     export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
     """
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
@@ -127,7 +137,6 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
                             hue=hue,plot="boxplot",order=bands)\
                 .configure(test=stat_test,loc=ast_loc,text_format='star',verbose=0)\
                 .apply_test().annotate(line_offset_to_group=annot_offset[0], line_offset=annot_offset[1])
-                #.apply_and_annotate()
         
     if legend != False:
         if legend == True:
@@ -177,7 +186,7 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,annot_offset=[0.1,0.1],
     yscale='linear',legend=False,figsize=(6,4),palette=None,verbose=True,export=False):
     """
-    Plot boxplot for power spectra values for a specific frequency band of interest at regions/channels.
+    Plot boxplot for PSD values for a specific frequency band of interest at regions/channels.
 
     Parameters
     ----------
@@ -187,8 +196,16 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     condition_comp_list: A list of strings for experiment conditions codes to compare (e.g. [['EC_00','EC_06'],['EC_06','EC_07']])
     condition_legend: A list of strings for the experiment conditions plotted
     fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
+    title (optional): A boolean for displaying the title of the plot
     stat_test (optional): A string for the statistical test for comparison (default: 'Wilcoxon')
     ast_loc (optional): A string for placement of asterix for statistical comparison (default: 'inside')
+    ylims (optional): A list for y-scale limits (default: None)
+    flier_label_xyloc (optional): Custom xy location for outlier label (in case they will be out of plot range)
+    annot_offset (optional): Custom offset values for moving statistical test asterix annotations
+    yscale (optional): Scale of y-scale (available: 'linear','log')
+    legend (optional): Custom legend xy location (Matplotlib)
+    figsize (optional): Figure size (Matplotlib)
+    palette (optional): Figure color palette (Matplotlib/Seaborn)
     export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
     """
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
@@ -232,7 +249,6 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
                         hue=hue,plot="boxplot",order=regions)\
                 .configure(test=stat_test,text_format='star',loc=ast_loc,verbose=0)\
                 .apply_test().annotate(line_offset_to_group=annot_offset[0], line_offset=annot_offset[1])
-                #.apply_and_annotate()
     
     if legend != False:
         if legend == True:

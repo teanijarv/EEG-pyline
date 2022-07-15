@@ -6,6 +6,25 @@ from basic.arrange_data import *
 
 # ========== Functions ==========
 def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,non_responders=None):
+    """
+    Read and organise all the PSD data (before visualisation) together for one experiment state.
+
+    Parameters
+    ----------
+    psd_reg_folder: A string with relative path to regional PSD values' files
+    psd_ch_folder: A string with relative path to channels' PSD values' files
+    psd_faa_folder: A string with relative path to alpha asymmetry files
+    exp_folder: A string with a relative directory to experiment folder (e.g. 'Eyes Closed\Baseline')
+    non_responders (optional): A string for not including some of the subjects, for example for removing non-responders
+                                (e.g. "SUBJECT_0003|SUBJECT_0008|SUBJECT_0011")
+
+    Returns
+    -------
+    df_psd_reg: A dataframe with PSD values for each region per subject
+    df_psd_ch: A dataframe with PSD values for each channel per subject
+    epochs: An epochs file for that experiment from the first subject
+    """
+    
     # Locate all PSD files (regions, channels and asymmetry) and save their information
     dir_inprogress_reg,b_names_reg,condition_reg = [None]*len(exp_folder),[None]*len(exp_folder),[None]*len(exp_folder)
     dir_inprogress_ch,b_names_ch,condition_ch = [None]*len(exp_folder),[None]*len(exp_folder),[None]*len(exp_folder)
@@ -54,6 +73,19 @@ def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,n
 
 def export_group_psd_comparison(psd_reg_folder,psd_ch_folder,df_psd_reg,df_psd_ch,stat_test,
                                 condition_codes_comparisons,verbose=True):
+    """
+    Compare the groups' PSD values and export the statistical tests' results as Excel files.
+
+    Parameters
+    ----------
+    psd_reg_folder: A string with relative path to regional PSD values' files
+    psd_ch_folder: A string with relative path to channels' PSD values' files
+    df_psd_reg: A dataframe with PSD values for each brain region per subject
+    df_psd_ch: A dataframe with PSD values for each channel per subject
+    stat_test: The statistical test to be applied (available: 't-test_paired','Wilcoxon')
+    condition_codes_comparisons: A list of string pairs for experiment conditions codes to compare (e.g. [['EO_00','EO_06'],['EO_06','EO_07']])
+    """
+
     # Apply statistical test on the spectral data (regional and channels) and export results
     for condition in condition_codes_comparisons:
         df_reg_desc,df_reg_pvals,df_reg_statvals,_ = apply_stat_test(df_psd_reg,condition,stat_test=stat_test,verbose=verbose)
@@ -76,6 +108,20 @@ def export_group_psd_comparison(psd_reg_folder,psd_ch_folder,df_psd_reg,df_psd_c
             df_ch_statvals.to_excel(writer, sheet_name='Stat-values')
 
 def add_clinical_data_to_psd(df_psd,clinical_data_path,rstrip='_EOC'):
+    """
+    Read clinical outcomes data and merge with PSD values to a dataframe.
+
+    Parameters
+    ----------
+    df_psd: A dataframe with PSD values (for each region/channel) per subject
+    clinical_data_path: A string with absolute path to clinical outcomes data
+    rstrip (optional): A string for removing the right side substring from PSD indeces to make them the same as clinical data indeces
+
+    Returns
+    -------
+    df_psd_withclinical: A dataframe with PSD values (for each region/channel) with clinical outcomes per subject
+    """
+
     # Modify PSD dataframe and read in clinical data from Excel file
     df_psd['Subject'] = df_psd['Subject'].map(lambda x: x.rstrip(rstrip))
     df_psd = df_psd.set_index('Subject')
@@ -90,7 +136,19 @@ def add_clinical_data_to_psd(df_psd,clinical_data_path,rstrip='_EOC'):
     return df_psd_withclinical
 
 def apply_comparison_pairs_to_data(df_psd_withclinical,condition_codes_comparisons):
-    # Create comparison dataframe for PSD and clinical data for each comparison pair for each band
+    """
+    Create comparison dataframe for PSD and clinical data for each comparison pair for each band
+
+    Parameters
+    ----------
+    df_psd_withclinical: A dataframe with PSD values (for each region/channel) with clinical outcomes per subject
+    condition_codes_comparisons: A list of string pairs for experiment conditions codes to compare (e.g. [['EO_00','EO_06'],['EO_06','EO_07']])
+
+    Returns
+    -------
+    df_psd_withclinical_comparison: A dataframe with PSD and clinical values compared within conditions/timepoints
+    """
+
     df_psd_withclinical_comparison = pd.DataFrame()
     for band in df_psd_withclinical['Frequency band'].unique():
         band_df = df_psd_withclinical[df_psd_withclinical['Frequency band']==band]

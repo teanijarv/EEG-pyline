@@ -12,10 +12,13 @@ def apply_stat_test(df_psd,conditions,stat_test,verbose=False):
     ----------
     df_psd: A Pandas dataframe of the power spectra values (for all the channels or regions)
     condition_comp_list: A list of two strings for experiment conditions codes to compare (e.g. ['EC_00','EC_06'])
-    
+    stat_test: The statistical test to be applied (available: 't-test_paired','Wilcoxon')
+
     Returns
     -------
+    df_desc: A Pandas dataframe including descriptive measures for the compared data
     df_pvals: A Pandas dataframe of p-values from the performed test
+    df_statistic: A Pandas dataframe of the test's statistic values
     significant_locs: An array of locations (regions/channels) where p <= 0.05
     """
     bands = df_psd['Frequency band'].unique()

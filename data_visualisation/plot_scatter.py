@@ -8,6 +8,25 @@ import scipy.stats as stats
 # ========== Functions ==========
 def plot_correlation(df_psd_clinical_comparison,band,comparison_cond,region,clinical_outcome,state,labels,
                       correlation='Spearman',fnt=['sans-serif',9,8],color_palette=[None,None],title=True,export=False):
+    """
+    Plot scatter plot for correlation between PSD values and clinical outcomes at a location and band of interest.
+
+    Parameters
+    ----------
+    df_psd_clinical_comparison: A Pandas dataframe of PSD values and clinical outcomes compared between timepoints
+    band: The frequency band of the PSD values (e.g. 'Alpha')
+    comparison_cond: A list of strings for conditions to compare (e.g. ['06','07'])
+    region: A string for the region/channel in interest (e.g. 'Fp1')
+    clinical_outcome: A string for the clinical outcome in interest (e.g. 'Dass21_depression')
+    state: A list of strings for the states of interest (e.g. ['Eyes closed','Eyes open'])
+    labels: A list of strings for x and y labels (e.g. ['DASS-D (%)','Theta PSD at occipital region (%)'])
+    correlation (optional): A string of the correlation test (available: 'Spearman','Pearson')
+    fnt (optional): A list of font, and two font sizes (default: ['sans-serif',8,10])
+    color_palette (optional): Figure color palette (Matplotlib/Seaborn) (e.g. ["#5A9","husl"])
+    title (optional): A boolean for displaying the title of the plot
+    export (optional): A boolean for exporting, if True then the plot will be saved (default: False)
+    """
+    
     data = df_psd_clinical_comparison[df_psd_clinical_comparison['Frequency band']==band]
     data = data[data['Condition']==str(comparison_cond)]
 

@@ -14,12 +14,15 @@ def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_dur
     ----------
     epochs: Epochs-type (MNE-Python) EEG file
     subjectname: A string for subject's name
-    epo_duration (optional): An integer for the duration for epochs
+    fminmax (optional): The minimum and maximum frequency range for estimating Welch's PSD
+    window (optional): The window type for estimating Welch's PSD
+    window_duration (optional): An integer for the length of that window
+    window_overlap (optional): A float for the percentage of overlap between the windows
 
     Returns
     -------
     psds: An array for power spectrum density values
-    freqs: An array for corresponding frequencies
+    freqs: An array for the corresponding frequencies
     """
     # Calculate PSD with Welch's method
     window_size = int(epochs.info['sfreq']*window_duration)
@@ -166,5 +169,18 @@ def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs):
     return psd_band_mean_ch
 
 def calculate_asymmetry_ch(df_psd_band,left_ch,right_ch):
+    """
+    Calculate asymmetry between brain hemispheres.
+
+    Parameters
+    ----------
+    df_psd_band: A dataframe with PSD values (for each region/channel) per subject for one band
+    left_ch: A string for the left channel (or region)
+    right_ch: A string for the right channel (or region)
+
+    Returns
+    -------
+    df_asymmetry: A dataframe for calculated asymmetry for all the subjects
+    """
     df_asymmetry = (df_psd_band[left_ch] - df_psd_band[right_ch])/(df_psd_band[left_ch] + df_psd_band[right_ch])*100
     return df_asymmetry
