@@ -7,7 +7,8 @@ import scipy.stats as stats
 
 # ========== Functions ==========
 def plot_correlation(df_psd_clinical_comparison,band,comparison_cond,region,clinical_outcome,state,labels,
-                      correlation='Spearman',fnt=['sans-serif',9,8],color_palette=[None,None],title=True,export=False):
+                      correlation='Spearman',fnt=['sans-serif',9,8],color_palette=[None,None],title=True,
+                      trend_line_ci=[False,None],legend=True,export=False):
     """
     Plot scatter plot for correlation between PSD values and clinical outcomes at a location and band of interest.
 
@@ -56,20 +57,22 @@ def plot_correlation(df_psd_clinical_comparison,band,comparison_cond,region,clin
             print('Can only plot 1 or 2 states.')
 
     sns.set_style("whitegrid",{'font.family': [fnt[0]]})
-    plt.figure(dpi=100)
+    plt.figure(dpi=300)
     if len(state) == 1:
-        ax = sns.scatterplot(data=data, x=clinical_outcome, y=region, color=color_palette[0])
-        ax.annotate(f'$\\rho = {r[0]:.3f}, p = {p[0]:.3f}$',
-                        xy=(0.675, 1.025), xycoords='axes fraction', size=fnt[1])
+        ax = sns.lmplot(data=data, x=clinical_outcome, y=region, scatter_kws = {'color': color_palette[0]},
+                        line_kws = {'color': color_palette[0]}, fit_reg = trend_line_ci[0], ci = trend_line_ci[1])
+        plt.annotate(f'$\\rho = {r[0]:.3f}, p = {p[0]:.3f}$',
+                        xy=(0, 1.025), xycoords='axes fraction', size=fnt[1])
     elif len(state) == 2:
-        ax = sns.scatterplot(data=data, x=clinical_outcome, y=region, palette=color_palette[1], hue='State')
-        ax.annotate(f'$\\rho_c = {r[0]:.3f}, p_c = {p[0]:.3f}$',
-                        xy=(0.675, 1.1), xycoords='axes fraction', size=fnt[1])
-        ax.annotate(f'$\\rho_o = {r[1]:.3f}, p_o = {p[1]:.3f}$',
-                        xy=(0.675, 1.025), xycoords='axes fraction', size=fnt[1])
-        plt.legend(title='State',title_fontsize=fnt[2],fontsize=fnt[1],**{'loc':'upper right','bbox_to_anchor':(0.255, 1.225)})
+        ax = sns.lmplot(data=data, x=clinical_outcome, y=region, palette=color_palette, hue='State',
+                        fit_reg = trend_line_ci[0], ci = trend_line_ci[1], legend = legend)
+        plt.annotate(f'$\\rho_c = {r[0]:.3f}, p_c = {p[0]:.3f}$',
+                        xy=(0, 1.08), xycoords='axes fraction', size=fnt[1])
+        plt.annotate(f'$\\rho_o = {r[1]:.3f}, p_o = {p[1]:.3f}$',
+                        xy=(0, 1.025), xycoords='axes fraction', size=fnt[1])
+        #plt.legend(title='State',title_fontsize=fnt[2],fontsize=fnt[1],**{'loc':'upper right','bbox_to_anchor':(1.255, 1.225)})
     if correlation == 'Spearman':
-        ax.set(xlim=(0, 101),ylim=(0, 102))
+        ax.set(xlim=(0, 101),ylim=(0, 101))
     if title == True:
         plt.suptitle("{}'s correlation at {} region".format(correlation,region))
     plt.xlabel(labels[0],fontsize=fnt[1])

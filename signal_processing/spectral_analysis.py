@@ -134,7 +134,7 @@ def siqnal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
 
     return psd_max_mad_error
 
-def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs):
+def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs,ln_normalization=False):
     """
     Find frequency band power in interest for all the channels.
 
@@ -160,6 +160,11 @@ def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs):
     psd_band_ch = psds_all_channels[:,idx_band]
     psd_band_mean_ch = psd_band_ch.mean(axis=(1))
 
+    #print(band,'before norm',psd_band_mean_ch)
+    if ln_normalization == True:
+        psd_band_mean_ch = np.log(psd_band_mean_ch)
+
+    #print(band,'after norm',psd_band_mean_ch)
     # # If the error is larger than 2, print it as a result (visual inspection)
     # if psd_max_mad_error < 2:
     #     print(subjectname,b_name,"MAD error is OK:",psd_max_mad_error)
