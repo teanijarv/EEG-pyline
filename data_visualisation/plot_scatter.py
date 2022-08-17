@@ -61,14 +61,14 @@ def plot_correlation(df_psd_clinical_comparison,band,comparison_cond,region,clin
     if len(state) == 1:
         ax = sns.lmplot(data=data, x=clinical_outcome, y=region, scatter_kws = {'color': color_palette[0]},
                         line_kws = {'color': color_palette[0]}, fit_reg = trend_line_ci[0], ci = trend_line_ci[1])
-        plt.annotate(f'$\\rho = {r[0]:.3f}, p = {p[0]:.3f}$',
+        plt.annotate(f'r = {r[0]:.3f}, p = {p[0]:.3f}',
                         xy=(0, 1.025), xycoords='axes fraction', size=fnt[1])
     elif len(state) == 2:
         ax = sns.lmplot(data=data, x=clinical_outcome, y=region, palette=color_palette, hue='State',
                         fit_reg = trend_line_ci[0], ci = trend_line_ci[1], legend = legend)
-        plt.annotate(f'$\\rho_c = {r[0]:.3f}, p_c = {p[0]:.3f}$',
+        plt.annotate(f'EC: r = {r[0]:.3f}, p = {p[0]:.3f}',
                         xy=(0, 1.08), xycoords='axes fraction', size=fnt[1])
-        plt.annotate(f'$\\rho_o = {r[1]:.3f}, p_o = {p[1]:.3f}$',
+        plt.annotate(f'EO: r = {r[1]:.3f}, p = {p[1]:.3f}',
                         xy=(0, 1.025), xycoords='axes fraction', size=fnt[1])
         #plt.legend(title='State',title_fontsize=fnt[2],fontsize=fnt[1],**{'loc':'upper right','bbox_to_anchor':(1.255, 1.225)})
     if correlation == 'Spearman':

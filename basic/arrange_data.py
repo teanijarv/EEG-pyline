@@ -120,6 +120,10 @@ def create_results_folders(exp_folder):
         os.makedirs(os.path.join(r"Results\Relative PSD\regions",exp_folder))
     except FileExistsError:
         pass
+    try:
+        os.makedirs(os.path.join(r"Results\FOOOF",exp_folder))
+    except FileExistsError:
+        pass
 
 def export_psd_results(df_psd_band,df_rel_psd_band,exp_folder,exp_condition,band,brain_regions):
     """

@@ -6,11 +6,13 @@ This is an EEG pipeline used at the USC's Thompson Institute created by Toomas E
 
 **Spectral analysis** reads clean EEG (FIF files) signals for each subject, calculates power spectrum density (PSD) for each band of interest, does signal quality check (visual inspection), and exports the bandpowers regionally and channel-by-channel into Excel files.
 
-**Data visualisation** reads all PSD Excel files and compares different conditions with each other using a statistical test of choice (currently only paired t-test and Wilcoxon signed-rank test), thereby giving information about statistically significant bandpower changes in various locations (regions and channels) between different conditions. Finally, plotting functions (`plot_topomaps_band`, `plot_boxplot_band`, `plot_boxplot_location`) can be used to plot the results.
+**Data visualisation** reads all PSD Excel files and compares different conditions with each other using a statistical test of choice (currently only paired t-test and Wilcoxon signed-rank test), thereby giving information about statistically significant bandpower changes in various locations (regions and channels) between different conditions. Finally, plotting functions (`plot_topomaps_band`, `plot_boxplot_band`, `plot_boxplot_location`) can be used to plot the results. Also possible to import other measures to find correlation between the change of variables within timepoints; scatter plot function (`plot_correlation`) for Spearman or Pearson.
+
+**FOOOF** reads clean EEG (FIF files) signals for each subject, calculates PSD for the frequency range of interest, and estimates the aperiodic (1/f) and periodic (oscillatory) components of the PSD. Finally, exports parameters for aperiodic activity (exponent, offset) and periodic activity (power peaks).
 
 ### TO-DO
 - Non-linear analysis (e.g., Higuchi fractal dimension)
-- More time-domain analyses (e.g., ERP)
+- Time-domain analyses (e.g., ERP)
 
 ## Requirements
 The data processing and analysis is tested with Biosemi 32-channel EEG set. I recommend to create a [conda environment](https://www.anaconda.com/distribution/) with all the dependencies using the environment.yml file in this repository. However, down below you can see all the required libraries across parts of the pipeline in case you want to use only a specific notebook.
@@ -38,6 +40,11 @@ The data processing and analysis is tested with Biosemi 32-channel EEG set. I re
 - Matplotlib
 - Statannotations
 
+### FOOOF:
+- MNE
+- Pandas
+- fooof
+
 ## References
 [1] Alexandre Gramfort, Martin Luessi, Eric Larson, Denis A. Engemann, Daniel Strohmeier, Christian Brodbeck, Roman Goj, Mainak Jas, Teon Brooks, Lauri Parkkonen, and Matti S. Hämäläinen. MEG and EEG data analysis with MNE-Python. Frontiers in Neuroscience, 7(267):1–13, 2013. doi:10.3389/fnins.2013.00267.
 
@@ -54,3 +61,5 @@ The data processing and analysis is tested with Biosemi 32-channel EEG set. I re
 [7] Waskom M, et al. mwaskom/seaborn: v0.8.1 (September 2017) [Internet]. Zenodo; 2017. Available from: https://doi.org/10.5281/zenodo.883859
 
 [8] J. D. Hunter, "Matplotlib: A 2D Graphics Environment", Computing in Science & Engineering, vol. 9, no. 3, pp. 90-95, 2007.
+
+[9] Donoghue T, Haller M, Peterson EJ, Varma P, Sebastian P, Gao R, Noto T, Lara AH, Wallis JD, Knight RT, Shestyuk A, Voytek B (2020). Parameterizing neural power spectra into periodic and aperiodic components. Nature Neuroscience, 23, 1655-1665. DOI: 10.1038/s41593-020-00744-x

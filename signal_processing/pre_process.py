@@ -44,6 +44,7 @@ def artefact_rejection(filt,subjectname,epo_duration=5):
     """
     epochs = mne.make_fixed_length_epochs(filt, duration=epo_duration, preload=True)
 
+    epochs.average().plot()
     epochs.plot_image(title="GFP without AR ({})".format(subjectname))
 
     reject_criteria = get_rejection_threshold(epochs)
@@ -54,9 +55,9 @@ def artefact_rejection(filt,subjectname,epo_duration=5):
     ar.fit(epochs)
     epochs_ar, reject_log = ar.transform(epochs, return_log=True)
 
-    #epochs[reject_log.bad_epochs].plot()
     reject_log.plot('horizontal')
 
+    epochs_ar.average().plot()
     epochs_ar.plot_image(title="GFP with AR ({})".format(subjectname))
 
     return epochs_ar

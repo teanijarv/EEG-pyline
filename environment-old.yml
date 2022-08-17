@@ -18,10 +18,10 @@ dependencies:
   - brotli-bin=1.0.9=h8ffe710_7
   - brotlipy=0.7.0=py310he2412df_1004
   - bzip2=1.0.8=h8ffe710_4
-  - ca-certificates=2022.6.15=h5b45459_0
+  - ca-certificates=2022.4.26=haa95532_0
   - cached-property=1.5.2=hd8ed1ab_1
   - cached_property=1.5.2=pyha770c72_1
-  - certifi=2022.6.15=py310h5588dad_0
+  - certifi=2022.5.18.1=py310haa95532_0
   - cffi=1.15.0=py310hcbf9ad4_0
   - charset-normalizer=2.0.12=pyhd8ed1ab_0
   - colorama=0.4.4=pyh9f0ad1d_0
@@ -34,7 +34,6 @@ dependencies:
   - et_xmlfile=1.1.0=py310haa95532_0
   - executing=0.8.3=pyhd3eb1b0_0
   - fonttools=4.33.3=py310he2412df_0
-  - fooof=1.0.0=pyh5ca1d4c_0
   - freetype=2.10.4=h546665d_1
   - h5io=0.1.7=pyh8a188c0_0
   - h5py=3.6.0=nompi_py310h00cbb18_100
@@ -103,7 +102,7 @@ dependencies:
   - numpy-base=1.22.3=py310h206c741_0
   - openjpeg=2.4.0=hb211442_1
   - openpyxl=3.0.9=pyhd3eb1b0_0
-  - openssl=1.1.1q=h8ffe710_0
+  - openssl=1.1.1o=h2bbff1b_0
   - packaging=21.3=pyhd8ed1ab_0
   - pandas=1.4.2=py310hd77b12b_0
   - pandocfilters=1.5.0=pyhd3eb1b0_0

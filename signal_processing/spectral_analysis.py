@@ -6,7 +6,7 @@ import numpy as np
 from scipy import stats
 
 # ========== Functions ==========
-def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_duration=2,window_overlap=0.5):
+def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_duration=2,window_overlap=0.5,plot=True):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
 
@@ -33,18 +33,19 @@ def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_dur
     # Unit conversion from V^2/Hz to uV^2/Hz
     psds = psds*1e12
 
-    # Plot average PSD for all epochs and channels (only for plot)
-    psds_mean_all = psds.mean(axis=(0, 1))
+    if plot == True:
+        # Plot average PSD for all epochs and channels (only for plot)
+        psds_mean_all = psds.mean(axis=(0, 1))
 
-    sns.set_style("darkgrid",{'font.family': ['sans-serif']})
-    plt.figure()
-    plt.plot(freqs,psds_mean_all)
-    plt.fill_between(freqs,psds_mean_all)
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('PSD (uV\u00b2/Hz)')
-    plt.title("PSD ({})".format(subjectname))
-    plt.xlim(1,40)
-    plt.ylim(0,1.1*max(psds_mean_all))
+        sns.set_style("darkgrid",{'font.family': ['sans-serif']})
+        plt.figure()
+        plt.plot(freqs,psds_mean_all)
+        plt.fill_between(freqs,psds_mean_all)
+        plt.xlabel('Frequency (Hz)')
+        plt.ylabel('PSD (uV\u00b2/Hz)')
+        plt.title("PSD ({})".format(subjectname))
+        plt.xlim(1,40)
+        plt.ylim(0,1.1*max(psds_mean_all))
 
     return [psds,freqs]
 
