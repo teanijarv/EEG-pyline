@@ -5,7 +5,7 @@ from basic.stats import apply_stat_test
 from basic.arrange_data import *
 
 # ========== Functions ==========
-def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,non_responders=None):
+def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,non_responders=None,data_folder='Data'):
     """
     Read and organise all the PSD data (before visualisation) together for one experiment state.
 
@@ -34,7 +34,7 @@ def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,n
     [dir_inprogress_faa,filenames_faa,condition_faa] = read_excel_psd('',psd_faa_folder,verbose=False)
 
     # Get one epochs file for later topographical plots' electrode placement information
-    dir_inprogress_epo = os.path.join(r"Data\Clean",exp_folder[0])
+    dir_inprogress_epo = os.path.join(r"{}\Clean".format(data_folder),exp_folder[0])
     _, subject_names = read_files(dir_inprogress_epo,"_clean-epo.fif",verbose=False)
     epochs = mne.read_epochs(fname='{}\{}_clean-epo.fif'.format(dir_inprogress_epo,subject_names[0]),verbose=False)
 

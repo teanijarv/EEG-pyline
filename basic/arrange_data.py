@@ -96,7 +96,7 @@ def read_excel_psd(exp_folder,psd_folder,verbose=True):
     
     return [dir_inprogress,b_names,condition]
 
-def create_results_folders(exp_folder):
+def create_results_folders(exp_folder,results_foldername="Results"):
     """
     Dummy way to try to pre-create folders for PSD results before exporting them
 
@@ -105,27 +105,27 @@ def create_results_folders(exp_folder):
     exp_folder: A string with a relative directory to experiment folder (e.g. 'Eyes Closed\Baseline')
     """
     try:
-        os.makedirs(os.path.join(r"Results\Absolute PSD\channels",exp_folder))
+        os.makedirs(os.path.join(r"{}\Absolute PSD\channels".format(results_foldername),exp_folder))
     except FileExistsError:
         pass
     try:
-        os.makedirs(os.path.join(r"Results\Absolute PSD\regions",exp_folder))
+        os.makedirs(os.path.join(r"{}\Absolute PSD\regions".format(results_foldername),exp_folder))
     except FileExistsError:
         pass
     try:
-        os.makedirs(os.path.join(r"Results\Relative PSD\channels",exp_folder))
+        os.makedirs(os.path.join(r"{}\Relative PSD\channels".format(results_foldername),exp_folder))
     except FileExistsError:
         pass
     try:
-        os.makedirs(os.path.join(r"Results\Relative PSD\regions",exp_folder))
+        os.makedirs(os.path.join(r"{}\Relative PSD\regions".format(results_foldername),exp_folder))
     except FileExistsError:
         pass
     try:
-        os.makedirs(os.path.join(r"Results\FOOOF",exp_folder))
+        os.makedirs(os.path.join(r"{}\FOOOF".format(results_foldername),exp_folder))
     except FileExistsError:
         pass
 
-def export_psd_results(df_psd_band,df_rel_psd_band,exp_folder,exp_condition,band,brain_regions):
+def export_psd_results(df_psd_band,df_rel_psd_band,exp_folder,exp_condition,band,brain_regions,results_foldername='Results'):
     """
     Export PSD results (for channels & regions) as Excel files
 
@@ -140,11 +140,11 @@ def export_psd_results(df_psd_band,df_rel_psd_band,exp_folder,exp_condition,band
 
     """
     # Save the PSD values for each channel for each band in Excel format
-    df_psd_band.to_excel(r"Results\Absolute PSD\channels\{}\{}_psd_{}.xlsx".format(exp_folder,exp_condition,band))
-    df_rel_psd_band.to_excel(r"Results\Relative PSD\channels\{}\{}_rel_psd_{}.xlsx".format(exp_folder,exp_condition,band))
+    df_psd_band.to_excel(r"{}\Absolute PSD\channels\{}\{}_psd_{}.xlsx".format(results_foldername,exp_folder,exp_condition,band))
+    df_rel_psd_band.to_excel(r"{}\Relative PSD\channels\{}\{}_rel_psd_{}.xlsx".format(results_foldername,exp_folder,exp_condition,band))
 
     # Find regional band powers and save them to Excel as well
     df_psd_band_reg = df_channels_to_regions(df_psd_band,brain_regions)
-    df_psd_band_reg.to_excel(r"Results\Absolute PSD\regions\{}\{}_psd_{}.xlsx".format(exp_folder,exp_condition,band))
+    df_psd_band_reg.to_excel(r"{}\Absolute PSD\regions\{}\{}_psd_{}.xlsx".format(results_foldername,exp_folder,exp_condition,band))
     df_rel_psd_band_reg = df_channels_to_regions(df_rel_psd_band,brain_regions)
-    df_rel_psd_band_reg.to_excel(r"Results\Relative PSD\regions\{}\{}_rel_psd_{}.xlsx".format(exp_folder,exp_condition,band))
+    df_rel_psd_band_reg.to_excel(r"{}\Relative PSD\regions\{}\{}_rel_psd_{}.xlsx".format(results_foldername,exp_folder,exp_condition,band))
