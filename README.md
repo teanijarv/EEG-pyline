@@ -19,6 +19,13 @@ The data processing and analysis is tested with Biosemi 32-channel EEG set. I re
 
 `conda env create -n EEG-pipeline-TI -f environment.yml`
 
+If you want to install all the necessary packages separately then these four installs will cover all the packages.
+
+`conda install -c conda-forge mne`
+`conda install -c conda-forge autoreject`
+`conda install -c nclibz statannotations`
+`conda install -c conda-forge fooof`
+
 ### Pre-processing:
 - MNE
 - AutoReject
