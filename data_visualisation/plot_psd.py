@@ -121,7 +121,7 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     ax.set_yscale(yscale)
     
     pairs = []
-    if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
+    if stat_test=='t-test_paired' or stat_test=='Wilcoxon' or stat_test=='t-test_ind':
         for i in range(len(condition_comp_list)):
             _,_,_,significant = apply_stat_test(df_psd[['Subject','Frequency band','Condition',region]],condition_comp_list[i],stat_test=stat_test,verbose=verbose)
             for j in range(len(significant)):
@@ -184,7 +184,7 @@ def plot_boxplot_location(df_psd,bands,region,condition_comp_list,condition_lege
     
 def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,fnt=['sans-serif',8,10],
     title=True,stat_test='Wilcoxon',ast_loc='inside',ylims=None,flier_label_xyloc=None,annot_offset=[0.1,0.1],
-    yscale='linear',legend=False,figsize=(6,4),palette=None,verbose=True,export=False):
+    yscale='linear',legend=False,figsize=(6,4),ylabel='PSD (µV\u00b2/Hz)',palette=None,verbose=True,export=False):
     """
     Plot boxplot for PSD values for a specific frequency band of interest at regions/channels.
 
@@ -233,7 +233,7 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     ax.set_yscale(yscale)
 
     pairs = []
-    if stat_test=='t-test_paired' or stat_test=='Wilcoxon':
+    if stat_test=='t-test_paired' or stat_test=='Wilcoxon' or stat_test=='t-test_ind':
         for i in range(len(condition_comp_list)):
             _,_,_,significant = apply_stat_test(df_psd[df_psd['Frequency band']==band],condition_comp_list[i],stat_test=stat_test,verbose=verbose)
             for j in range(len(significant)):
@@ -263,15 +263,15 @@ def plot_boxplot_band(df_psd,regions,band,condition_comp_list,condition_legend,f
     
     if title == True:
         if ast_loc == 'outside':
-            ax.set_title('{} power regional boxplot'.format(band),y=1.125,fontsize=fnt[2])
+            ax.set_title('{} regional boxplot'.format(band),y=1.125,fontsize=fnt[2])
         else:
-            ax.set_title('{} power regional boxplot'.format(band),y=1.025,fontsize=fnt[2])
+            ax.set_title('{} regional boxplot'.format(band),y=1.025,fontsize=fnt[2])
     
     if yscale == 'linear':
         ax.yaxis.set_major_formatter(tick.FormatStrFormatter('%.1f'))
     plt.tick_params(axis='both', which='major', labelsize=fnt[2])
     plt.xlabel(x, fontsize=fnt[1])
-    plt.ylabel('PSD (µV\u00b2/Hz)', fontsize=fnt[1])
+    plt.ylabel(ylabel, fontsize=fnt[1])
 
     if ylims != None:
         ax.set(ylim=ylims)

@@ -5,7 +5,7 @@ from basic.stats import apply_stat_test
 from basic.arrange_data import *
 
 # ========== Functions ==========
-def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,non_responders=None,data_folder='Data'):
+def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,non_responders=None,data_folder='Data/Clean'):
     """
     Read and organise all the PSD data (before visualisation) together for one experiment state.
 
@@ -34,15 +34,15 @@ def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,n
     [dir_inprogress_faa,filenames_faa,condition_faa] = read_excel_psd('',psd_faa_folder,verbose=False)
 
     # Get one epochs file for later topographical plots' electrode placement information
-    dir_inprogress_epo = os.path.join(r"{}\Clean".format(data_folder),exp_folder[0])
+    dir_inprogress_epo = os.path.join(r"{}".format(data_folder),exp_folder[0])
     _, subject_names = read_files(dir_inprogress_epo,"_clean-epo.fif",verbose=False)
-    epochs = mne.read_epochs(fname='{}\{}_clean-epo.fif'.format(dir_inprogress_epo,subject_names[0]),verbose=False)
+    epochs = mne.read_epochs(fname='{}/{}_clean-epo.fif'.format(dir_inprogress_epo,subject_names[0]),verbose=False)
 
     # Read all REGIONAL spectral data and save to dataframe
     df_psd_reg = pd.DataFrame()
     for i in range(len(b_names_reg[0])):
         for n_exps in range(len(b_names_reg)):
-            globals()[b_names_reg[n_exps][i]] = pd.read_excel('{}\{}.xlsx'\
+            globals()[b_names_reg[n_exps][i]] = pd.read_excel('{}/{}.xlsx'\
                                                 .format(dir_inprogress_reg[n_exps],b_names_reg[n_exps][i]))\
             .assign(**{'Frequency band': condition_reg[n_exps][i][1],'Condition': condition_reg[n_exps][i][0]})
             df_psd_reg = pd.concat([df_psd_reg,globals()[b_names_reg[n_exps][i]]])
@@ -51,7 +51,7 @@ def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,n
     df_psd_ch = pd.DataFrame()
     for i in range(len(b_names_ch[0])):
         for n_exps in range(len(b_names_ch)):
-            globals()[b_names_ch[n_exps][i]] = pd.read_excel('{}\{}.xlsx'
+            globals()[b_names_ch[n_exps][i]] = pd.read_excel('{}/{}.xlsx'
                                                             .format(dir_inprogress_ch[n_exps],b_names_ch[n_exps][i]))\
                 .assign(**{'Frequency band': condition_ch[n_exps][i][1],'Condition': condition_ch[n_exps][i][0]})
             df_psd_ch = pd.concat([df_psd_ch,globals()[b_names_ch[n_exps][i]]])
@@ -59,7 +59,7 @@ def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,n
     # (WIP) Read electrode pairs' data for frontal alpha asymmetry (FAA)
     df_faa = pd.DataFrame()
     for i in range(len(filenames_faa)):
-        df_faa_temp = pd.read_excel('{}\{}.xlsx'.format(dir_inprogress_faa,filenames_faa[i]))\
+        df_faa_temp = pd.read_excel('{}/{}.xlsx'.format(dir_inprogress_faa,filenames_faa[i]))\
             .assign(**{'Frequency band':'FAA','Condition': condition_faa[i][0].removesuffix('_frontal_asymmetry')})
         df_faa = pd.concat([df_faa,df_faa_temp])
 
@@ -69,7 +69,7 @@ def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,n
         df_psd_ch = df_psd_ch[df_psd_ch['Subject'].str.contains(non_responders) == False]
         df_faa = df_faa[df_faa['Subject'].str.contains(non_responders) == False]
     
-    return [df_psd_reg,df_psd_ch,epochs]
+    return [df_psd_reg,df_psd_ch,df_faa,epochs]
 
 def export_group_psd_comparison(psd_reg_folder,psd_ch_folder,df_psd_reg,df_psd_ch,stat_test,
                                 condition_codes_comparisons,verbose=True):
@@ -94,7 +94,7 @@ def export_group_psd_comparison(psd_reg_folder,psd_ch_folder,df_psd_reg,df_psd_c
             os.makedirs(os.path.join(psd_reg_folder,''))
         except FileExistsError:
             pass
-        with pd.ExcelWriter(r"{}\{}_results_{}-{}.xlsx".format(psd_reg_folder,stat_test,condition[0],condition[1])) as writer:
+        with pd.ExcelWriter(r"{}/{}_results_{}-{}.xlsx".format(psd_reg_folder,stat_test,condition[0],condition[1])) as writer:
             df_reg_desc.to_excel(writer, sheet_name='Descripitives')
             df_reg_pvals.to_excel(writer, sheet_name='P-values')
             df_reg_statvals.to_excel(writer, sheet_name='Stat-values')
@@ -102,7 +102,7 @@ def export_group_psd_comparison(psd_reg_folder,psd_ch_folder,df_psd_reg,df_psd_c
             os.makedirs(os.path.join(psd_ch_folder,''))
         except FileExistsError:
             pass
-        with pd.ExcelWriter(r"{}\{}_results_{}-{}.xlsx".format(psd_ch_folder,stat_test,condition[0],condition[1])) as writer:
+        with pd.ExcelWriter(r"{}/{}_results_{}-{}.xlsx".format(psd_ch_folder,stat_test,condition[0],condition[1])) as writer:
             df_ch_desc.to_excel(writer, sheet_name='Descripitives')
             df_ch_pvals.to_excel(writer, sheet_name='P-values')
             df_ch_statvals.to_excel(writer, sheet_name='Stat-values')

@@ -25,6 +25,7 @@ If you want to install all the necessary packages separately then these four ins
 `conda install -c conda-forge autoreject`
 `conda install -c nclibz statannotations`
 `conda install -c conda-forge fooof`
+`conda install -c anaconda openpyxl`
 
 ### Pre-processing:
 - MNE

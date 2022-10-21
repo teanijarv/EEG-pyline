@@ -44,6 +44,8 @@ def apply_stat_test(df_psd,conditions,stat_test,verbose=False):
                 df_statistic[band][region],df_pvals[band][region] = stats.ttest_rel(df_psd_band_cond1[region], df_psd_band_cond2[region])
             elif stat_test=='Wilcoxon':
                 df_statistic[band][region],df_pvals[band][region] = stats.wilcoxon(df_psd_band_cond1[region], df_psd_band_cond2[region])
+            elif stat_test=='t-test_ind':
+                df_statistic[band][region],df_pvals[band][region] = stats.ttest_ind(df_psd_band_cond1[region], df_psd_band_cond2[region])
             else:
                 print('No valid statistical test chosen')
         
