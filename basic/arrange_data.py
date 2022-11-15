@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # ========== Functions ==========
-def read_files(dir_inprogress,filetype,verbose=True):
+def read_files(dir_inprogress,filetype,exclude_subjects=None,verbose=True):
     """
     Get all the (EEG) file directories and subject names.
 
@@ -23,8 +23,18 @@ def read_files(dir_inprogress,filetype,verbose=True):
         if file.endswith(filetype):
             file_dirs.append(os.path.join(dir_inprogress, file))
             subject_names.append(os.path.join(file).removesuffix(filetype))
+
+    for excl_sub in exclude_subjects:
+        for i in range(len(subject_names)):
+            if excl_sub in subject_names[i]:
+                if verbose == True:
+                    print('EXCLUDED SUBJECT: ',excl_sub,'in',subject_names[i],'at',file_dirs[i])
+                del subject_names[i]
+                del file_dirs[i]
+                break
+
     if verbose == True:
-        print("Files in folder:",len(file_dirs))
+        print("Files in folder read in:",len(file_dirs))
 
     return [file_dirs, subject_names]
 
