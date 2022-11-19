@@ -1,30 +1,57 @@
 # ========== Packages ==========
 import mne
 from autoreject import (get_rejection_threshold, AutoReject)
+import matplotlib.pyplot as plt
+from data_visualisation.plot_filter import plot_filter
 
 # ========== Functions ==========
-def filter_raw_data(raw,l_freq=0.5,h_freq=50,eog_remove=True):
+def filter_raw_data(raw,filter_design,line_remove=None,
+                    eog_channels=["EXG1","EXG2","EXG3","EXG4","EXG5","EXG6","EXG7","EXG8"],
+                    plot_filt=False,savefig=False):
     """
     Apply FIR bandpass filter and remove EOG noise.
 
     Parameters
     ----------
     raw: Raw-type (MNE-Python) EEG file
-    l_freq (optional): A float or an integer for low cut-off frequency for the filter
-    h_freq (optional): A float or an integer for high cut-off frequency for the filter
-    eog_remove (optional): A boolean whether to remove EOG noise or not
+    filter_design: A dictionary of all the filter parameters (see MNE raw.filter or create_filter functions)
+    line_remove (optional): A boolean whether to remove power-line noise (50Hz) with a Notch filter or not
+    eog_channels (optional): A boolean whether to remove EOG noise or not, requires list of EOG channels
+    plot_filter (optional): A boolean whether to plot the band-pass filter
+    savefig (optional): A boolean whether to save the filter design
 
     Returns
     -------
     filt: Raw-type (MNE-Python) EEG file
     """
-    filt = raw.copy().load_data().filter(l_freq,h_freq).notch_filter([50])
 
-    if eog_remove == True:
+
+    filt = raw.copy().load_data().filter(**filter_design)
+
+    if plot_filt == True:
+        filter_params = mne.filter.create_filter(raw.get_data(),raw.info['sfreq'],**filter_design)
+        
+        freq_ideal = [0,filter_design['l_freq'],filter_design['l_freq'],
+                      filter_design['h_freq'],filter_design['h_freq'],raw.info['sfreq']/2]
+        gain_ideal = [0, 0, 1, 1, 0, 0]
+
+        fig, axs = plt.subplots(nrows=3,figsize=(8,8),layout='tight',dpi=100)
+        #axs[1].axvline(x=filter_design['l_freq'],linewidth=1.1, color='r',linestyle='--')
+        #axs[1].axvline(x=filter_design['h_freq'],linewidth=1.1, color='r',linestyle='--')
+        plot_filter(filter_params,raw.info['sfreq'],freq=freq_ideal,gain=gain_ideal,
+                    fscale='log',flim=(0.01, 80),dlim=(0,6),axes=axs,show=False,linewidth=1.1)
+        if savefig == True:
+            plt.savefig(fname='Data/filter_design.png',dpi=300)
+        plt.show()
+
+    if line_remove != None:
+        filt = filt.notch_filter([line_remove])
+
+    if eog_channels != None or eog_channels != False:
         eog_projs, _ = mne.preprocessing.compute_proj_eog(filt,n_grad=0,n_mag=0,n_eeg=1,reject=None,no_proj=True,ch_name=["EXG1","EXG2","EXG3","EXG4","EXG5","EXG6","EXG7","EXG8"])
         filt.add_proj(eog_projs,remove_existing=True)
         filt.apply_proj()
-        filt.drop_channels(["EXG1","EXG2","EXG3","EXG4","EXG5","EXG6","EXG7","EXG8","Status"])
+        filt.drop_channels(eog_channels)
 
     return filt
 
