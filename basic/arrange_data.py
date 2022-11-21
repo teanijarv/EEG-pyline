@@ -24,14 +24,17 @@ def read_files(dir_inprogress,filetype,exclude_subjects=[],verbose=True):
             file_dirs.append(os.path.join(dir_inprogress, file))
             subject_names.append(os.path.join(file).removesuffix(filetype))
 
-    for excl_sub in exclude_subjects:
-        for i in range(len(subject_names)):
-            if excl_sub in subject_names[i]:
-                if verbose == True:
-                    print('EXCLUDED SUBJECT: ',excl_sub,'in',subject_names[i],'at',file_dirs[i])
-                del subject_names[i]
-                del file_dirs[i]
-                break
+    try:
+        for excl_sub in exclude_subjects:
+            for i in range(len(subject_names)):
+                if excl_sub in subject_names[i]:
+                    if verbose == True:
+                        print('EXCLUDED SUBJECT: ',excl_sub,'in',subject_names[i],'at',file_dirs[i])
+                    del subject_names[i]
+                    del file_dirs[i]
+                    break
+    except:
+        pass
 
     if verbose == True:
         print("Files in {} read in: {}".format(dir_inprogress,len(file_dirs)))
