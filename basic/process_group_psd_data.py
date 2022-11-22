@@ -1,8 +1,8 @@
 # ========== Packages ==========
 import mne, os
 import pandas as pd
-from basic.stats import apply_stat_test
-from basic.arrange_data import *
+from arrange_data import read_excel_psd, read_files
+from stats import apply_stat_test
 
 # ========== Functions ==========
 def read_group_psd_data(psd_reg_folder,psd_ch_folder,psd_faa_folder,exp_folder,non_responders=None,data_folder='Data/Clean'):

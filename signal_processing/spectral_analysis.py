@@ -49,7 +49,7 @@ def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_dur
 
     return [psds,freqs]
 
-def siqnal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
+def signal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
     """
     Plot topographically PSD values and calculate median absolute deviation
     for the first and second half of the signal for signal reliability control.
@@ -153,7 +153,7 @@ def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs,ln_normaliza
     psd_band_mean_ch: An array for a frequency band power values for all the channels.
     """
     # Calculate the MAD error (z-score) of the bandpower to be sure of the quality
-    psd_max_mad_error = siqnal_quality_check(psds,freqs,band,b_name,subjectname,epochs)
+    psd_max_mad_error = signal_quality_check(psds,freqs,band,b_name,subjectname,epochs)
     
     low, high = band
     psds_all_channels = psds.mean(axis=(0))

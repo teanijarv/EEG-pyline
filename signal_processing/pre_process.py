@@ -48,7 +48,7 @@ def filter_raw_data(raw,filter_design,line_remove=None,
         filt = filt.notch_filter([line_remove])
 
     if eog_channels != None or eog_channels != False:
-        eog_projs, _ = mne.preprocessing.compute_proj_eog(filt,n_grad=0,n_mag=0,n_eeg=1,reject=None,no_proj=True,ch_name=["EXG1","EXG2","EXG3","EXG4","EXG5","EXG6","EXG7","EXG8"])
+        eog_projs, _ = mne.preprocessing.compute_proj_eog(filt,n_grad=0,n_mag=0,n_eeg=1,reject=None,no_proj=True,ch_name=eog_channels)
         filt.add_proj(eog_projs,remove_existing=True)
         filt.apply_proj()
         filt.drop_channels(eog_channels)
