@@ -6,7 +6,8 @@ import numpy as np
 from scipy import stats
 
 # ========== Functions ==========
-def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_duration=2,window_overlap=0.5,plot=True):
+def calculate_psd(epochs, subjectname, fminmax=[1,50], window='hamming', window_duration=2,
+                  window_overlap=0.5, zero_padding=3, verbose=False, plot=True):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
 
@@ -17,35 +18,57 @@ def calculate_psd(epochs,subjectname,fminmax=[1,100],window='hamming',window_dur
     fminmax (optional): The minimum and maximum frequency range for estimating Welch's PSD
     window (optional): The window type for estimating Welch's PSD
     window_duration (optional): An integer for the length of that window
-    window_overlap (optional): A float for the percentage of overlap between the windows
+    window_overlap (optional): A float for the percentage of windows size 
+                                for overlap between the windows
+    zero-padding (optional): A float for coefficient times window size for zero-pads
 
     Returns
     -------
     psds: An array for power spectrum density values
     freqs: An array for the corresponding frequencies
     """
-    # Calculate PSD with Welch's method
+    # Calculate window size in samples and window size x coefs for overlap and zero-pad
     window_size = int(epochs.info['sfreq']*window_duration)
-    psds, freqs = mne.time_frequency.psd_welch(epochs,n_fft=window_size,verbose=False,
-                                               n_overlap=int(window_size*window_overlap),
-                                               fmin=fminmax[0],fmax=fminmax[1],window=window)
+    n_overlap = int(window_size*window_overlap)
+    n_zeropad = int(window_size*zero_padding)
+
+    # N of samples from signal equals to windows size
+    n_per_seg = window_size
+
+    # N of samples for FFT equals N of samples + zero-padding samples
+    n_fft = n_per_seg + n_zeropad
+
+    # Calculate PSD with Welch's method
+    psds, freqs = mne.time_frequency.psd_welch(epochs, n_fft=n_fft, n_per_seg=n_per_seg,
+                                            n_overlap=n_overlap, window=window,
+                                            fmin=fminmax[0], fmax=fminmax[1], 
+                                            verbose=False)
 
     # Unit conversion from V^2/Hz to uV^2/Hz
     psds = psds*1e12
 
-    if plot == True:
-        # Plot average PSD for all epochs and channels (only for plot)
-        psds_mean_all = psds.mean(axis=(0, 1))
+    # If true, print all the parameters involved in PSD calculation
+    if verbose == True:
+        print('Window type:', window)
+        print('Window size:', window_size)
+        print('Overlap:', n_overlap)
+        print('Zero-padding:', n_zeropad)
+        print('\nSamples per segment:', n_per_seg)
+        print('Samples for FFT:', n_fft)
+        print('Frequency resolution:', freqs[1]-freqs[0], 'Hz')
 
-        sns.set_style("darkgrid",{'font.family': ['sans-serif']})
+    # If true, plot average PSD for all epochs and channels with channel PSDs
+    if plot == True:
         plt.figure()
-        plt.plot(freqs,psds_mean_all)
-        plt.fill_between(freqs,psds_mean_all)
+        plt.plot(freqs,np.transpose(psds.mean(axis=(0))),color='black',alpha=0.1)
+        plt.plot(freqs,psds.mean(axis=(0, 1)),color='blue',alpha=1)
         plt.xlabel('Frequency (Hz)')
         plt.ylabel('PSD (uV\u00b2/Hz)')
-        plt.title("PSD ({})".format(subjectname))
-        plt.xlim(1,40)
-        plt.ylim(0,1.1*max(psds_mean_all))
+        plt.title("Welch's PSD ({})".format(subjectname))
+        plt.xlim(fminmax)
+        plt.ylim(0,None)
+        plt.grid(linewidth=0.2)
+        plt.show()
 
     return [psds,freqs]
 
