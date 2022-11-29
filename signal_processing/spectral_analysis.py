@@ -39,16 +39,17 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], window='hamming', window_
     n_fft = n_per_seg + n_zeropad
 
     # Calculate PSD with Welch's method
-    psds, freqs = mne.time_frequency.psd_welch(epochs, n_fft=n_fft, n_per_seg=n_per_seg,
-                                            n_overlap=n_overlap, window=window,
-                                            fmin=fminmax[0], fmax=fminmax[1], 
-                                            verbose=False)
+    spectrum = epochs.compute_psd(method='welch', fmin=fminmax[0], fmax=fminmax[1], 
+                                  n_fft=n_fft, n_per_seg=n_per_seg, verbose=False,
+                                  n_overlap=n_overlap, window=window)
+    psds, freqs = spectrum.get_data(return_freqs=True)
 
     # Unit conversion from V^2/Hz to uV^2/Hz
     psds = psds*1e12
 
     # If true, print all the parameters involved in PSD calculation
     if verbose == True:
+        print(spectrum)
         print('Window type:', window)
         print('Window size:', window_size)
         print('Overlap:', n_overlap)
@@ -144,8 +145,8 @@ def signal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
         sns.set_style("white",{'font.family': ['sans-serif']})
         fig,(ax1,ax2) = plt.subplots(ncols=2)
         fig.suptitle("MAD >= 2 ! Quality control for {} ({})".format(b_name,subjectname),y=1.1,x=0.575)
-        im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p1,epochs.info,axes=ax1,vmin=vmin,vmax=vmax,show=False)
-        im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p2,epochs.info,axes=ax2,vmin=vmin,vmax=vmax,show=False)
+        im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p1,epochs.info,axes=ax1,vlim=[vmin,vmax],show=False)
+        im,cm = mne.viz.plot_topomap(psd_band_mean_ch_p2,epochs.info,axes=ax2,vlim=[vmin,vmax],show=False)
         ax1.set_title("Epochs 0-{}\nAvg MAD error = {}".format(idx_mid_epoch-1,psd_mad_error_avg[0]))
         ax2.set_title("Epochs {}-{}\nAvg MAD error = {}".format(idx_mid_epoch,len(psds[:,0,0]),psd_mad_error_avg[1]))
         ax_x_start = 0.95
@@ -158,7 +159,8 @@ def signal_quality_check(psds,freqs,band,b_name,subjectname,epochs):
 
     return psd_max_mad_error
 
-def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs,ln_normalization=False):
+def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs,
+                          ln_normalization=False,verbose=True):
     """
     Find frequency band power in interest for all the channels.
 
@@ -176,26 +178,27 @@ def bandpower_per_channel(psds,freqs,band,b_name,subjectname,epochs,ln_normaliza
     psd_band_mean_ch: An array for a frequency band power values for all the channels.
     """
     # Calculate the MAD error (z-score) of the bandpower to be sure of the quality
-    psd_max_mad_error = signal_quality_check(psds,freqs,band,b_name,subjectname,epochs)
+    _ = signal_quality_check(psds,freqs,band,b_name,subjectname,epochs)
     
-    low, high = band
-    psds_all_channels = psds.mean(axis=(0))
-    idx_band = np.logical_and(freqs >= low, freqs <= high)
-    psd_band_ch = psds_all_channels[:,idx_band]
-    psd_band_mean_ch = psd_band_ch.mean(axis=(1))
+    # Average all epochs together for each channels' PSD values
+    psds_per_ch = psds.mean(axis=(0))
 
-    #print(band,'before norm',psd_band_mean_ch)
+    # Pick only PSD values which are within the frequency band of interest
+    idx_band = np.logical_and(freqs >= band[0], freqs <= band[1])
+    psds_band_per_ch = psds_per_ch[:,idx_band]
+
+    # Average the PSD values within the band together to get bandpower for each channel
+    bp_per_ch = psds_band_per_ch.mean(axis=(1))
+
+    # If true, normalise the BP with natural logarithm transform
     if ln_normalization == True:
-        psd_band_mean_ch = np.log(psd_band_mean_ch)
+        bp_per_ch = np.log(bp_per_ch)
+    
+    if verbose == True:
+        print('Finding bandpower within {} Hz with Ln normalisation set to {}'.format(
+               band, str(ln_normalization)))
 
-    #print(band,'after norm',psd_band_mean_ch)
-    # # If the error is larger than 2, print it as a result (visual inspection)
-    # if psd_max_mad_error < 2:
-    #     print(subjectname,b_name,"MAD error is OK:",psd_max_mad_error)
-    # else:
-    #     print(subjectname,b_name,"MAD error is NOT OK:",psd_max_mad_error)
-
-    return psd_band_mean_ch
+    return bp_per_ch
 
 def calculate_asymmetry_ch(df_psd_band,left_ch,right_ch):
     """
@@ -212,4 +215,5 @@ def calculate_asymmetry_ch(df_psd_band,left_ch,right_ch):
     df_asymmetry: A dataframe for calculated asymmetry for all the subjects
     """
     df_asymmetry = (df_psd_band[left_ch] - df_psd_band[right_ch])/(df_psd_band[left_ch] + df_psd_band[right_ch])*100
+
     return df_asymmetry

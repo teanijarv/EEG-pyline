@@ -2,7 +2,6 @@
 import mne
 from autoreject import (get_rejection_threshold, AutoReject)
 import matplotlib.pyplot as plt
-from data_visualisation.plot_filter import plot_filter
 
 # ========== Functions ==========
 def filter_raw_data(raw,filter_design,line_remove=None,
@@ -36,10 +35,8 @@ def filter_raw_data(raw,filter_design,line_remove=None,
         gain_ideal = [0, 0, 1, 1, 0, 0]
 
         fig, axs = plt.subplots(nrows=3,figsize=(8,8),layout='tight',dpi=100)
-        #axs[1].axvline(x=filter_design['l_freq'],linewidth=1.1, color='r',linestyle='--')
-        #axs[1].axvline(x=filter_design['h_freq'],linewidth=1.1, color='r',linestyle='--')
-        plot_filter(filter_params,raw.info['sfreq'],freq=freq_ideal,gain=gain_ideal,
-                    fscale='log',flim=(0.01, 80),dlim=(0,6),axes=axs,show=False,linewidth=1.1)
+        mne.viz.misc.plot_filter(filter_params,raw.info['sfreq'],freq=freq_ideal,gain=gain_ideal,
+                                 fscale='log',flim=(0.01, 80),dlim=(0,6),axes=axs,show=False)
         if savefig == True:
             plt.savefig(fname='Data/filter_design.png',dpi=300)
         plt.show()
