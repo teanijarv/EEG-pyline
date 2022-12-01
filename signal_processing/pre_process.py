@@ -4,9 +4,8 @@ from autoreject import (get_rejection_threshold, AutoReject)
 import matplotlib.pyplot as plt
 
 # ========== Functions ==========
-def filter_raw_data(raw,filter_design,line_remove=None,
-                    eog_channels=["EXG1","EXG2","EXG3","EXG4","EXG5","EXG6","EXG7","EXG8"],
-                    plot_filt=False,savefig=False):
+def filter_raw_data(raw, filter_design, line_remove=None, eog_channels=None,
+                    plot_filt=False, savefig=False, verbose=True):
     """
     Apply FIR bandpass filter and remove EOG noise.
 
@@ -24,8 +23,8 @@ def filter_raw_data(raw,filter_design,line_remove=None,
     filt: Raw-type (MNE-Python) EEG file
     """
 
-
-    filt = raw.copy().load_data().filter(**filter_design)
+    if verbose==True: print('---\nAPPLYING FILTER\n')
+    filt = raw.copy().load_data().filter(**filter_design, verbose=verbose)
 
     if plot_filt == True:
         filter_params = mne.filter.create_filter(raw.get_data(),raw.info['sfreq'],**filter_design)
@@ -42,17 +41,20 @@ def filter_raw_data(raw,filter_design,line_remove=None,
         plt.show()
 
     if line_remove != None:
+        if verbose==True: print('---\nAPPLYING NOTCH FILTER\n')
         filt = filt.notch_filter([line_remove])
 
     if eog_channels != None or eog_channels != False:
-        eog_projs, _ = mne.preprocessing.compute_proj_eog(filt,n_grad=0,n_mag=0,n_eeg=1,reject=None,no_proj=True,ch_name=eog_channels)
+        if verbose==True: print('---\nAPPLYING SSP FOR EOG-REMOVAL\n')
+        eog_projs, _ = mne.preprocessing.compute_proj_eog(filt,n_grad=0,n_mag=0,n_eeg=1,reject=None,
+                                                          no_proj=True,ch_name=eog_channels,verbose=verbose)
         filt.add_proj(eog_projs,remove_existing=True)
         filt.apply_proj()
         filt.drop_channels(eog_channels)
 
     return filt
 
-def artefact_rejection(filt,subjectname,epo_duration=5):
+def artefact_rejection(filt, subjectname, epo_duration=5, verbose=True):
     """
     Convert Raw file to Epochs and conduct artefact rejection/augmentation on the signal.
 
@@ -66,21 +68,25 @@ def artefact_rejection(filt,subjectname,epo_duration=5):
     -------
     epochs: Epochs-type (MNE-Python) EEG file
     """
-    epochs = mne.make_fixed_length_epochs(filt, duration=epo_duration, preload=True)
+    if verbose==True: print('---\nDIVIDING INTO EPOCHS\n')
+    epochs = mne.make_fixed_length_epochs(filt, duration=epo_duration, preload=True, verbose=verbose)
 
+    if verbose==True: print('---\nEPOCHS BEFORE AR\n')
     epochs.average().plot()
     epochs.plot_image(title="GFP without AR ({})".format(subjectname))
 
+    if verbose==True: print('---\nAPPLYING GLOBAL AR\n')
     reject_criteria = get_rejection_threshold(epochs)
     print('Dropping epochs with rejection threshold:',reject_criteria)
-    epochs.drop_bad(reject=reject_criteria)
+    epochs.drop_bad(reject=reject_criteria, verbose=verbose)
 
+    if verbose==True: print('---\nAPPLYING LOCAL AR\n')
     ar = AutoReject(thresh_method='random_search',random_state=1)
     ar.fit(epochs)
     epochs_ar, reject_log = ar.transform(epochs, return_log=True)
-
     reject_log.plot('horizontal')
 
+    if verbose==True: print('---\nEPOCHS AFTER AR\n')
     epochs_ar.average().plot()
     epochs_ar.plot_image(title="GFP with AR ({})".format(subjectname))
 

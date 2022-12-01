@@ -6,8 +6,9 @@ import numpy as np
 from scipy import stats
 
 # ========== Functions ==========
-def calculate_psd(epochs, subjectname, fminmax=[1,50], window='hamming', window_duration=2,
-                  window_overlap=0.5, zero_padding=3, verbose=False, plot=True):
+def calculate_psd(epochs, subjectname, fminmax=[1,50], method='welch', window='hamming',
+                  window_duration=2, window_overlap=0.5, zero_padding=3,
+                  verbose=False, plot=True):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
 
@@ -39,7 +40,7 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], window='hamming', window_
     n_fft = n_per_seg + n_zeropad
 
     # Calculate PSD with Welch's method
-    spectrum = epochs.compute_psd(method='welch', fmin=fminmax[0], fmax=fminmax[1], 
+    spectrum = epochs.compute_psd(method=method, fmin=fminmax[0], fmax=fminmax[1], 
                                   n_fft=n_fft, n_per_seg=n_per_seg, verbose=False,
                                   n_overlap=n_overlap, window=window)
     psds, freqs = spectrum.get_data(return_freqs=True)
@@ -49,6 +50,7 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], window='hamming', window_
 
     # If true, print all the parameters involved in PSD calculation
     if verbose == True:
+        print("---\nPSD ({}) calculation\n".format(method))
         print(spectrum)
         print('Window type:', window)
         print('Window size:', window_size)
@@ -60,12 +62,12 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], window='hamming', window_
 
     # If true, plot average PSD for all epochs and channels with channel PSDs
     if plot == True:
-        plt.figure()
+        plt.figure(figsize=(5,4), dpi=100)
         plt.plot(freqs,np.transpose(psds.mean(axis=(0))),color='black',alpha=0.1)
         plt.plot(freqs,psds.mean(axis=(0, 1)),color='blue',alpha=1)
         plt.xlabel('Frequency (Hz)')
         plt.ylabel('PSD (uV\u00b2/Hz)')
-        plt.title("Welch's PSD ({})".format(subjectname))
+        plt.title("PSD,{} ({})".format(method, subjectname))
         plt.xlim(fminmax)
         plt.ylim(0,None)
         plt.grid(linewidth=0.2)
@@ -217,3 +219,29 @@ def calculate_asymmetry_ch(df_psd_band,left_ch,right_ch):
     df_asymmetry = (df_psd_band[left_ch] - df_psd_band[right_ch])/(df_psd_band[left_ch] + df_psd_band[right_ch])*100
 
     return df_asymmetry
+
+def find_ind_band(spectrum, freqs, freq_interest=[7, 14], bw_size=6):
+    # Get indexes of band of interest
+    freq_interest_idx = np.where(np.logical_and(freqs>=freq_interest[0],
+                        freqs<=freq_interest[1]))
+    
+    # Find maximum amplitude (peak width) in that bandwidth
+    pw = np.max(spectrum[freq_interest_idx])
+
+    # Find center frequency index and value where the peak is
+    cf_idx = np.where(spectrum == pw)
+    cf = float(freqs[cf_idx])
+    
+    # Get bandwidth range for the band np.round(bw[0], 4)
+    bw = [np.round(cf-bw_size/2, 4), np.round(cf+bw_size/2, 4)]
+
+    # Find individual bandpower indexes based on the binsize
+    bp_idx = np.logical_and(freqs>=bw[0], freqs<=bw[1])
+
+    # Average the PSD values in these indexes together to get bandpower
+    abs_bp = spectrum[bp_idx].mean()
+
+    # Calculate relative bandpower
+    rel_bp = abs_bp / spectrum.mean()
+
+    return cf, pw, bw, abs_bp, rel_bp
