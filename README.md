@@ -36,14 +36,13 @@ This is an EEG pipeline used at the USC's Thompson Institute created by Toomas E
 Different studies/publications that have used this pipeline for the EEG analysis and their corresponding notebooks.
 
 `OKTOS_rsEEG_classic_bp.ipynb` - Anijärv, Can et al. 2022. "Spectral changes of EEG following a 6-week low-dose oral ketamine treatment in adults with major depressive disorder and chronic suicidality". [Under review]
+`LEISURE_rsEEG_aperiodic_activity.ipynb` - Campbell et al. 2022. "1/f and Attention: Examining the Relationship Between Attention and Aperiodic Neural Activity in Resting-State EEG in Ageing". [Manuscript in progress]
 
 **Coming soon:**
 
 `LABS_rsEEG_classic_bp.ipynb`
 
 `OKTOS_aoEEG_erp_analysis.ipynb`
-
-`LEISURE_rsEEG_aperiodic_activity.ipynb`
 
 `LEISURE-LABS_rsEEG_aperiodic+iaf.ipynb`
 
