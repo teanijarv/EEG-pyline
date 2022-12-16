@@ -52,7 +52,7 @@ def find_all_peaks(evoked_obj,epochs,thresh=None,subject_name='',verbose=False,p
     return minpeak_times,minpeak_mags,maxpeak_times,maxpeak_mags
 
 def identify_erps(evoked_obj,erp_wins,minpeak_times,minpeak_mags,maxpeak_times,maxpeak_mags,subject_name='',
-                  verbose=False,plot=False,savefig=False,results_foldername = "Results/"):
+                  verbose=False,plot=False,savefig=False,results_foldername = "Results/",exp_folder=''):
     # Pre-define variables
     erp_peaks = {}
     not_erp_peaks = {}
@@ -129,13 +129,14 @@ def identify_erps(evoked_obj,erp_wins,minpeak_times,minpeak_mags,maxpeak_times,m
             plt.plot(erp_peaks[erp_name][0], erp_peaks[erp_name][1], marker='*', linestyle='None', color=color)
             plt.annotate(erp_name, (erp_peaks[erp_name][0]+15,erp_peaks[erp_name][1]-0.15))
         if savefig == True:
-            plt.savefig(fname='{}/ERP plots/{}_erpfig.png'.format(results_foldername,subject_name)) # add ERP plots to precreation function
+            plt.savefig(fname='{}/{}/ERP analysis/{}_erpfig.png'.format(results_foldername,
+                                                                        exp_folder, subject_name)) # add ERP plots to precreation function
         plt.show()
     
     return erp_peaks, not_erp_peaks
 
 def find_minmax_erp(evoked_obj,erp_peaks,erp_tochange,new_time_win,subject_name='',
-                    verbose=False,plot=False,savefig=False,results_foldername = "Results/"):
+                    verbose=False,plot=False,savefig=False,results_foldername = "Results/",exp_folder=''):
     time_coef = 1e3
     amplitude_coef= 1e6
 
@@ -188,7 +189,8 @@ def find_minmax_erp(evoked_obj,erp_peaks,erp_tochange,new_time_win,subject_name=
             plt.plot(erp_peaks[erp_name][0], erp_peaks[erp_name][1], marker='*', linestyle='None', color=color)
             plt.annotate(erp_name, (erp_peaks[erp_name][0]+15,erp_peaks[erp_name][1]-0.15))
         if savefig == True:
-            plt.savefig(fname='{}/ERP plots/{}_erpfig.png'.format(results_foldername,subject_name)) # add ERP plots to precreation function
+            plt.savefig(fname='{}/{}/ERP analysis/{}_erpfig.png'.format(results_foldername,
+                                                                        exp_folder, subject_name)) # add ERP plots to precreation function
         plt.show()
 
     return erp_peaks
