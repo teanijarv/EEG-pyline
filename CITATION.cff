@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: EEG-pyline: EEG pipeline in Python
+title: 'EEG-pyline: EEG pipeline in Python'
 message: >-
   If you use this repository, please cite it as
   below. Additionally, if you use any specific study
