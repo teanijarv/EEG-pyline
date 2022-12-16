@@ -35,6 +35,9 @@ def read_files(dir_inprogress,filetype,exclude_subjects=[],verbose=True):
                     break
     except:
         pass
+    
+    file_dirs = sorted(file_dirs)
+    subject_names = sorted(subject_names)
 
     if verbose == True:
         print("Files in {} read in: {}".format(dir_inprogress,len(file_dirs)))
@@ -85,7 +88,7 @@ def df_channels_to_regions(df_psd_band,brain_regions):
 
     return df_psd_reg_band
 
-def read_excel_psd(exp_folder,psd_folder,verbose=True):
+def read_excel_psd(exp_folder, psd_folder, condition_strsplit='_psd_', verbose=True):
     """
     Get all PSD file directories and corresponding bands and experiment conditions.
 
@@ -105,7 +108,7 @@ def read_excel_psd(exp_folder,psd_folder,verbose=True):
 
     condition = [None]*len(b_names)
     for i in range(len(b_names)):
-        condition[i] = b_names[i].split("_psd_", 1)
+        condition[i] = b_names[i].split(condition_strsplit, 1)
     
     return [dir_inprogress,b_names,condition]
 
