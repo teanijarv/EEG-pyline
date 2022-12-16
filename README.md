@@ -8,7 +8,7 @@ The main aim for creating this pipeline was to make EEG analysis in Python easie
 Different studies that have been using this pipeline for their EEG data analysis steps can be found as study notebooks. They include also longer explanation on why some parameters or methods have been chosen for pre-processing and/or analysis parts.
 
 ## Notebook templates
-
+Find in folder `/templates`. Different notebooks for using as templates for your EEG data analysis needs.
 
 ### Pre-processing
 `resting_preprocessing.ipynb` - importing raw resting state EEG (.bdf) files, re-referencing, applying bandpass (e.g., 1-30 Hz) FIR filter, cropping the signal, removing EOG noise with SSP, dividing signal into equal-sized epochs (e.g., 5 seconds), performing artefact rejection with Autoreject algorithm, exporting the cleaned EEG signals (.fif).
@@ -35,11 +35,11 @@ Different studies that have been using this pipeline for their EEG data analysis
 ### TO-DO
 - Non-linear analysis (e.g., Higuchi fractal dimension)
 - Other time-domain waveform analysis etc
-- Restructure the project in OOP and create a package (DM if you could help!)
+- Restructure the project and create a package (DM if you could help!)
 
 
 ## Study notebooks
-Different studies/publications that have used this pipeline for the EEG analysis and their corresponding notebooks.
+Find in folder `/studies`. Different studies/publications that have used this pipeline for the EEG analysis and their corresponding notebooks.
 
 `OKTOS_rsEEG_classic_bp.ipynb` - Anijärv, Can et al. 2023. "Spectral changes of EEG following a 6-week low-dose oral ketamine treatment in adults with major depressive disorder and chronic suicidality". [Under review]
 
