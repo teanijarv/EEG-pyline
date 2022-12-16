@@ -50,7 +50,7 @@ Different studies/publications that have used this pipeline for the EEG analysis
 ## Requirements
 The data processing and analysis is tested with Biosemi 32-channel EEG set. I recommend to create a [conda environment](https://www.anaconda.com/distribution/) with all the dependencies using the environment.yml file in this repository. However, down below you can see all the required libraries across parts of the pipeline in case you want to use only a specific notebook.
 
-`conda env create -n EEG-pipeline-TI -f environment.yml`
+`conda env create -n EEG-pyline -f environment.yml`
 
 If you want to install all the necessary packages separately then these four installs will cover all the packages.
 
