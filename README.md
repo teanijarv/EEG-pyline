@@ -1,5 +1,5 @@
-# EEG pipeline for resting and task EEG pre-processing and analyses
-This is an EEG pipeline used at the USC's Thompson Institute created by Toomas Erik Anijärv.
+# EEG-pyline: EEG pipeline in Python for resting and task EEG pre-processing and analyses
+This is an EEG pipeline used at the UniSC's Thompson Institute created by Toomas Erik Anijärv.
 
 ## Notebook templates
 
@@ -29,23 +29,23 @@ This is an EEG pipeline used at the USC's Thompson Institute created by Toomas E
 ### TO-DO
 - Non-linear analysis (e.g., Higuchi fractal dimension)
 - Other time-domain waveform analysis etc
-- A lot of code optimization still needs to be done...
+- Restructure the project in OOP and create a package (DM if you could help!)
 
 
 ## Study notebooks
 Different studies/publications that have used this pipeline for the EEG analysis and their corresponding notebooks.
 
-`OKTOS_rsEEG_classic_bp.ipynb` - Anijärv, Can et al. 2022. "Spectral changes of EEG following a 6-week low-dose oral ketamine treatment in adults with major depressive disorder and chronic suicidality". [Under review]
+`OKTOS_rsEEG_classic_bp.ipynb` - Anijärv, Can et al. 2023. "Spectral changes of EEG following a 6-week low-dose oral ketamine treatment in adults with major depressive disorder and chronic suicidality". [Under review]
 
-`LEISURE_rsEEG_aperiodic_activity.ipynb` - Campbell et al. 2022. "1/f and Attention: Examining the Relationship Between Attention and Aperiodic Neural Activity in Resting-State EEG in Ageing". [Manuscript in progress]
+`LEISURE_rsEEG_aperiodic_activity.ipynb` - Campbell et al. 2023. "1/f and Attention: Examining the Relationship Between Attention and Aperiodic Neural Activity in Resting-State EEG in Ageing". [Manuscript in progress]
+
+`LEISURE-LABS_rsEEG_aperiodic+iaf.ipynb` - Anijärv, Campbell et al. 2023. "Changes in Resting-State EEG Aperiodic 1/f Activity, Individual Alpha Frequency and Power, and Episodic Memory Performance in Healthy Adolescents and Older Adults". [Manuscript in progress]
 
 **Coming soon:**
 
 `LABS_rsEEG_classic_bp.ipynb`
 
 `OKTOS_aoEEG_erp_analysis.ipynb`
-
-`LEISURE-LABS_rsEEG_aperiodic+iaf.ipynb`
 
 ## Requirements
 The data processing and analysis is tested with Biosemi 32-channel EEG set. I recommend to create a [conda environment](https://www.anaconda.com/distribution/) with all the dependencies using the environment.yml file in this repository. However, down below you can see all the required libraries across parts of the pipeline in case you want to use only a specific notebook.
@@ -82,7 +82,7 @@ If you want to install all the necessary packages separately then these four ins
 - Statannotations
 
 ## Citation
-If you are using this project/pipeline in your EEG analysis, it is not mandatory to cite or refer to this repository, but it would be much appreciated if you did. *Coming soon on how to cite to this repo.*
+If you are using this project/pipeline in your EEG analysis, it would be appreciated if you could refer to this pipeline in your article. If you are using any specific study notebook, then additionally please add citation to the corresponding publication in your article.
 
 ## References
 [1] Alexandre Gramfort, Martin Luessi, Eric Larson, Denis A. Engemann, Daniel Strohmeier, Christian Brodbeck, Roman Goj, Mainak Jas, Teon Brooks, Lauri Parkkonen, and Matti S. Hämäläinen. MEG and EEG data analysis with MNE-Python. Frontiers in Neuroscience, 7(267):1–13, 2013. doi:10.3389/fnins.2013.00267.
