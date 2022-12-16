@@ -1,5 +1,5 @@
-# EEG-pyline: EEG pipeline in Python for resting and task EEG pre-processing and analyses
-This is an EEG pipeline used at the UniSC's Thompson Institute created by Toomas Erik Anijärv.
+# EEG-pyline: EEG pipeline in Python
+This is an EEG pipeline for resting and task EEG pre-processing and analyses used at the UniSC's Thompson Institute created by Toomas Erik Anijärv.
 
 ## Notebook templates
 
