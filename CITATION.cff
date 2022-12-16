@@ -14,5 +14,9 @@ authors:
     family-names: Anijärv
     email: toomaserikanijarv@gmail.com
     orcid: 'https://orcid.org/0000-0002-3650-4230'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7444821
+    description: 'EEG-pyline: EEG pipeline in Python'
 repository-code: 'https://github.com/teanijarv/EEG-pyline'
 license: MIT

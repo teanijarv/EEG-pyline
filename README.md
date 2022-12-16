@@ -1,5 +1,11 @@
 # EEG-pyline: EEG pipeline in Python
+[![DOI](https://zenodo.org/badge/495300654.svg)](https://zenodo.org/badge/latestdoi/495300654)
+
 This is an EEG pipeline for resting and task EEG pre-processing and analyses used at the UniSC's Thompson Institute created by Toomas Erik Anijärv.
+
+The main aim for creating this pipeline was to make EEG analysis in Python easier for other researchers who are not too familiar with programming but also do not want to use other commercial blackbox-style software. Using ready-made Jupyter notebooks, it is easy to get started with EEG data pre-processing, spectral analysis, and ERP analysis. 
+
+Different studies that have been using this pipeline for their EEG data analysis steps can be found as study notebooks. They include also longer explanation on why some parameters or methods have been chosen for pre-processing and/or analysis parts.
 
 ## Notebook templates
 
@@ -82,7 +88,9 @@ If you want to install all the necessary packages separately then these four ins
 - Statannotations
 
 ## Citation
-If you are using this project/pipeline in your EEG analysis, it would be appreciated if you could refer to this pipeline in your article. If you are using any specific study notebook, then additionally please add citation to the corresponding publication in your article.
+If you are using this project in your EEG study, it would be much appreciated if you could cite this repository in your work. See `CITATION.cff` or [![DOI](https://zenodo.org/badge/495300654.svg)](https://zenodo.org/badge/latestdoi/495300654) for information.
+
+If you are using any specific study notebook, then additionally please add citation to the corresponding publication in your article.
 
 ## References
 [1] Alexandre Gramfort, Martin Luessi, Eric Larson, Denis A. Engemann, Daniel Strohmeier, Christian Brodbeck, Roman Goj, Mainak Jas, Teon Brooks, Lauri Parkkonen, and Matti S. Hämäläinen. MEG and EEG data analysis with MNE-Python. Frontiers in Neuroscience, 7(267):1–13, 2013. doi:10.3389/fnins.2013.00267.
