@@ -18,5 +18,4 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.7444821
     description: 'EEG-pyline: EEG pipeline in Python'
-repository-code: 'https://github.com/teanijarv/EEG-pyline'
 license: MIT
