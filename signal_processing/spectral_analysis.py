@@ -62,7 +62,7 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], method='welch', window='h
 
     # If true, plot average PSD for all epochs and channels with channel PSDs
     if plot == True:
-        plt.figure(figsize=(5,4), dpi=100)
+        plt.figure(figsize=(5,3), dpi=100)
         plt.plot(freqs,np.transpose(psds.mean(axis=(0))),color='black',alpha=0.1)
         plt.plot(freqs,psds.mean(axis=(0, 1)),color='blue',alpha=1)
         plt.xlabel('Frequency (Hz)')

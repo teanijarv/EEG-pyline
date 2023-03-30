@@ -65,7 +65,7 @@ def array_to_df(subjectname,epochs,array_channels):
 
     return df_channels
 
-def df_channels_to_regions(df_psd_band,brain_regions):
+def df_channels_to_regions(df_psd_band, brain_regions):
     """
     Average channels together based on the defined brain regions.
 
@@ -73,15 +73,17 @@ def df_channels_to_regions(df_psd_band,brain_regions):
     ----------
     df_psd_band: A dataframe with PSD values for each channel per subject
     brain_regions: A dictionary of brain regions and EEG channels which they contain
+    drop_cols: List of columns which are not channel PSD data
 
     Returns
     -------
     df_psd_reg_band: A dataframe with PSD values for each brain region per subject
     """
+
     df_psd_reg_band = pd.DataFrame()
-    for reg_name in brain_regions:
-        df_temp = df_psd_band[brain_regions[reg_name]].copy().mean(axis=1)
-        df_psd_reg_band = pd.concat([df_psd_reg_band,df_temp],axis=1)
+    for region in brain_regions:
+        df_temp = df_psd_band[brain_regions[region]].copy().mean(axis=1)
+        df_psd_reg_band = pd.concat([df_psd_reg_band, df_temp], axis=1)
         
     df_psd_reg_band.columns = brain_regions.keys()
     df_psd_reg_band.index.name = 'Subject'
@@ -152,6 +154,11 @@ def create_results_folders(exp_folder, results_folder='Results', abs_psd=False,
             os.makedirs(os.path.join('{}/{}/ERP analysis'.format(results_folder, exp_folder)))
         except FileExistsError:
             pass
+    
+    try:
+        os.makedirs(os.path.join('{}/{}'.format(results_folder, exp_folder)))
+    except FileExistsError:
+        pass
 
 def export_psd_results(df_psd_band,df_rel_psd_band,exp_folder,exp_condition,band,brain_regions,results_folder='Results'):
     """
