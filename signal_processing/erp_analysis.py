@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from mne.preprocessing import peak_finder
 
-def find_all_peaks(evoked_obj,epochs,thresh=None,subject_name='',verbose=False,plot=False):
+def find_all_peaks(evoked_obj, epochs, t_range=[-200, 800], thresh=None, subject_name='',
+                   verbose=False, plot=False):
     time_coef = 1e3
     amplitude_coef= 1e6
 
@@ -41,8 +42,8 @@ def find_all_peaks(evoked_obj,epochs,thresh=None,subject_name='',verbose=False,p
         plt.xlabel('Time (ms)')
         plt.ylabel('Amplitude (uV)')
         plt.grid(which='major',axis='y',linewidth = 0.15)
-        plt.xticks(np.arange(-200, 801, step=100))
-        plt.xlim([-200,800])
+        plt.xticks(np.arange(t_range[0], t_range[1], step=100))
+        plt.xlim(t_range)
         plt.plot(evoked_time,evoked_data*amplitude_coef,linewidth=0.6,color='black')
         plt.plot(maxpeak_locs, maxpeak_mags, marker='*', linestyle='None', color='r')
         plt.plot(minpeak_locs, minpeak_mags, marker='*', linestyle='None', color='b')
@@ -51,8 +52,9 @@ def find_all_peaks(evoked_obj,epochs,thresh=None,subject_name='',verbose=False,p
 
     return minpeak_times,minpeak_mags,maxpeak_times,maxpeak_mags
 
-def identify_erps(evoked_obj,erp_wins,minpeak_times,minpeak_mags,maxpeak_times,maxpeak_mags,subject_name='',
-                  verbose=False,plot=False,savefig=False,results_foldername = "Results/",exp_folder=''):
+def identify_erps(evoked_obj, erp_wins, minpeak_times, minpeak_mags, maxpeak_times, maxpeak_mags,
+                  t_range=[-200, 800], subject_name='', verbose=False, plot=False, savefig=False,
+                  results_foldername = "Results/", exp_folder=''):
     # Pre-define variables
     erp_peaks = {}
     not_erp_peaks = {}
@@ -113,11 +115,10 @@ def identify_erps(evoked_obj,erp_wins,minpeak_times,minpeak_mags,maxpeak_times,m
         plt.suptitle('Event-related potentials ({})'.format(subject_name))
         plt.xlabel('Time (ms)')
         plt.ylabel('Amplitude (uV)')
-        plt.xlim([-200,800]) # need ato add a variable for these values for that from epochs info
         plt.plot(evoked_time,evoked_data*amplitude_coef,linewidth=0.6,color='black')
         plt.grid(which='major',axis='y',linewidth = 0.15)
-        plt.xticks(np.arange(-200, 801, step=100))
-        plt.xlim([-200,800])
+        plt.xticks(np.arange(t_range[0], t_range[1], step=100))
+        plt.xlim(t_range)
         for ie, erp_name in enumerate(erp_peaks):
             #print(ie,erp_name,erp_peaks[erp_name])
             if 'N' in erp_name:
@@ -135,8 +136,9 @@ def identify_erps(evoked_obj,erp_wins,minpeak_times,minpeak_mags,maxpeak_times,m
     
     return erp_peaks, not_erp_peaks
 
-def find_minmax_erp(evoked_obj,erp_peaks,erp_tochange,new_time_win,subject_name='',
-                    verbose=False,plot=False,savefig=False,results_foldername = "Results/",exp_folder=''):
+def find_minmax_erp(evoked_obj, erp_peaks, erp_tochange, new_time_win, t_range=[-200, 800],
+                    subject_name='', verbose=False, plot=False, savefig=False,
+                    results_foldername = "Results/", exp_folder=''):
     time_coef = 1e3
     amplitude_coef= 1e6
 
@@ -173,11 +175,10 @@ def find_minmax_erp(evoked_obj,erp_peaks,erp_tochange,new_time_win,subject_name=
         plt.suptitle('Event-related potentials ({})'.format(subject_name))
         plt.xlabel('Time (ms)')
         plt.ylabel('Amplitude (uV)')
-        plt.xlim([-200,800]) # need ato add a variable for these values for that from epochs info
         plt.plot(evoked_time,evoked_data,linewidth=0.6,color='black')
         plt.grid(which='major',axis='y',linewidth = 0.15)
-        plt.xticks(np.arange(-200, 801, step=100))
-        plt.xlim([-200,800])
+        plt.xticks(np.arange(t_range[0], t_range[1], step=100))
+        plt.xlim(t_range)
         for ie, erp_name in enumerate(erp_peaks):
             #print(ie,erp_name,erp_peaks[erp_name])
             if 'N' in erp_name:

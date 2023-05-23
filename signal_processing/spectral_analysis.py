@@ -7,7 +7,7 @@ from scipy import stats
 
 # ========== Functions ==========
 def calculate_psd(epochs, subjectname, fminmax=[1,50], method='welch', window='hamming',
-                  window_duration=2, window_overlap=0.5, zero_padding=3,
+                  window_duration=2, window_overlap=0.5, zero_padding=3, tminmax=[None, None],
                   verbose=False, plot=True):
     """
     Calculate power spectrum density with FFT/Welch's method and plot the result.
@@ -22,6 +22,8 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], method='welch', window='h
     window_overlap (optional): A float for the percentage of windows size 
                                 for overlap between the windows
     zero-padding (optional): A float for coefficient times window size for zero-pads
+    tminmax (optional): A list of first and last timepoint of the epoch to include;
+                        uses all epoch by default
 
     Returns
     -------
@@ -41,8 +43,9 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], method='welch', window='h
 
     # Calculate PSD with Welch's method
     spectrum = epochs.compute_psd(method=method, fmin=fminmax[0], fmax=fminmax[1], 
-                                  n_fft=n_fft, n_per_seg=n_per_seg, verbose=False,
-                                  n_overlap=n_overlap, window=window)
+                                  n_fft=n_fft, n_per_seg=n_per_seg, n_overlap=n_overlap,
+                                  window=window, tmin=tminmax[0], tmax=tminmax[1],
+                                  verbose=False)
     psds, freqs = spectrum.get_data(return_freqs=True)
 
     # Unit conversion from V^2/Hz to uV^2/Hz
@@ -52,6 +55,7 @@ def calculate_psd(epochs, subjectname, fminmax=[1,50], method='welch', window='h
     if verbose == True:
         print("---\nPSD ({}) calculation\n".format(method))
         print(spectrum)
+        print('Time period:', str(tminmax))
         print('Window type:', window)
         print('Window size:', window_size)
         print('Overlap:', n_overlap)
