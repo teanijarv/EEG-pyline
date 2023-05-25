@@ -11,47 +11,48 @@ Different studies that have been using this pipeline for their EEG data analysis
 Find in folder `/templates`. Different notebooks for using as templates for your EEG data analysis needs.
 
 ### Pre-processing
-`resting_preprocessing.ipynb` - importing raw resting state EEG (.bdf) files, re-referencing, applying bandpass (e.g., 1-30 Hz) FIR filter, cropping the signal, removing EOG noise with SSP, dividing signal into equal-sized epochs (e.g., 5 seconds), performing artefact rejection with Autoreject algorithm, exporting the cleaned EEG signals (.fif).
+`/resting_state/resting_preprocessing.ipynb` - importing raw resting state EEG (.bdf) files, re-referencing, applying bandpass (e.g., 1-30 Hz) FIR filter, cropping the signal, removing EOG noise with SSP, dividing signal into equal-sized epochs (e.g., 5 seconds), performing artefact rejection with Autoreject algorithm, exporting the cleaned EEG signals (.fif).
 
-`oddball_erp_preprocessing.ipynb` - importing raw auditory oddball task EEG (.bdf) files, re-referencing, applying bandpass (e.g., 1-15 Hz) FIR filter, removing EOG noise with SSP, finding event points including target tone followed by participant's button press, dividing the signal into 1-second epochs (i.e., -0.2-0s is pre-stimulus, 0s is stimulus or target tone, 0-0.8s is post-stimulus), performing artefact rejection with Autoreject algorithm, exporting the cleaned EEG signal (.fif).
+`/auditory_oddball/oddball_erp_preprocessing.ipynb` - importing raw auditory oddball task EEG (.bdf) files, re-referencing, applying bandpass (e.g., 1-15 Hz) FIR filter, removing EOG noise with SSP, finding event points and including only the target tone followed by participant's button press, dividing the signal into 1-second epochs (i.e., -0.2s - 0s is pre-stimulus, 0s is stimulus or target tone, 0 - 0.8s is post-stimulus), performing artefact rejection with Autoreject algorithm, exporting the cleaned EEG signal (.fif).
+
+`/sart/sart_erp_preprocessing.ipynb` - importing raw sustained attention response task (SART) task EEG (.bdf) files, re-referencing, applying bandpass (e.g., 1-30 Hz) FIR filter, removing EOG noise with SSP, finding event points and including only correct GO tasks (which were followed by participant's button press) and correct NO-GO tasks (which weren't followed by a button press) and exporting that, dividing the signal into 1.2-second epochs (i.e., -0.2s - 0s is pre-stimulus, 0s is the event, 0 - 1s is post-stimulus), performing artefact rejection with Autoreject algorithm, exporting the cleaned EEG signal (.fif).
 
 
 ### Spectral analysis
-`resting_classic_bp_analysis.ipynb` - importing clean resting state EEG (.fif) files, calculating Welch's power spectrum density (PSD) for each region of interest (e.g., averaging channels together or channel-by-channel) and divides the PSD estimates to pre-defined frequency bands (e.g., delta, theta, alpha, beta). Optionally it is possible to calculate the (alpha) asymmetry using channels from each hemispheres and also find relative band powers by dividing the absolute band power value with broadband power. Finally, the results are exported as Excel spreadsheets for each band power, region and participant.
+`/resting_state/resting_classic_bp_analysis.ipynb` - importing clean resting state EEG (.fif) files, calculating Welch's power spectrum density (PSD) for each region of interest (e.g., averaging channels together or channel-by-channel) and divides the PSD estimates to pre-defined frequency bands (e.g., delta, theta, alpha, beta). Optionally it is possible to calculate the (alpha) asymmetry using channels from each hemispheres and also find relative band powers by dividing the absolute band power value with broadband power. Finally, the results are exported as Excel spreadsheets for each band power, region and participant.
 
-`resting_aperiodicfit_bp_analysis.ipynb` - importing clean resting state EEG (.fif) files, calculating Welch's PSD for each region of interest, estimate the aperiodic 1/f-like component of the spectra with specparam (FOOOF) algorithm, and export the aperiodic component's parameters (i.e., exponent and offset). Remove the aperiodic component of the spectra (i.e., flatten the spectra) and use pre-defined band of interest (e.g., alpha) to find its peak parameters (i.e., center frequency and peak width) and absolute and relative PSDs. Finally, the results are exported as Excel spreadsheets for each participant and region displaying exponent, offset, band's CF, PW, absolute power, relative power, and model fit error measures.
+`/resting_state/resting_aperiodicfit_bp_analysis.ipynb` - importing clean resting state EEG (.fif) files, calculating Welch's PSD for each region of interest, estimate the aperiodic 1/f-like component of the spectra with specparam (FOOOF) algorithm, and export the aperiodic component's parameters (i.e., exponent and offset). Remove the aperiodic component of the spectra (i.e., flatten the spectra) and use pre-defined band of interest (e.g., alpha) to find its peak parameters (i.e., center frequency and peak width) and absolute and relative PSDs. Finally, the results are exported as Excel spreadsheets for each participant and region displaying exponent, offset, band's CF, PW, absolute power, relative power, and model fit error measures.
+
+`/sart/sart_aperiodicfit_bp_analysis.ipynb` - importing clean SART EEG (.fif) files, calculating Welch's PSD for a single channel for GO and NO-GO tasks for post-event time period and post-event-minus-ERP (see the notebook for more details), estimate the aperiodic 1/f-like component of the spectra with specparam (FOOOF) algorithm, and export the aperiodic component's parameters (i.e., exponent and offset). Remove the aperiodic component of the spectra (i.e., flatten the spectra) and find absolute and relative theta (or any other band of interest) power. Finally, the results are exported as Excel spreadsheets for each participant displaying exponent, offset, band's absolute power, relative power, and model fit error measures.
 
 
 ### ERP analysis
-`oddball_erp_analysis.ipynb` - importing clean auditory oddball task EEG (.fif) files, averaging the epochs (i.e., evoked signal), finding peaks and identifying them based on pre-defined ERP time windows, prompting the user with evoked signal with identified ERPs providing manual ERP detection using min/max voltage detection in user-specified time windows. This semi-automated process will be done through all the participants and then ERPs' absolute amplitudes, latencies and peak-to-peak amplitudes are exported for each participant for a single channel of interest as an Excel spreadsheet.
+`/auditory_oddball/oddball_erp_analysis.ipynb` - importing clean auditory oddball task EEG (.fif) files, averaging the epochs (i.e., evoked signal), finding peaks and identifying them based on pre-defined ERP time windows, prompting the user with evoked signal with identified ERPs providing manual ERP detection using min/max voltage detection in user-specified time windows. This semi-automated process will be done through all the participants and then ERPs' absolute amplitudes, latencies and peak-to-peak amplitudes are exported for each participant for a single channel of interest as an Excel spreadsheet.
 
+`/sart/sart_erp_analysis.ipynb` - importing clean SART EEG (.fif) files, averaging the epochs (i.e., evoked signal), finding peaks and identifying them based on pre-defined ERP time windows, prompting the user with evoked signal with identified ERPs providing manual ERP detection using min/max voltage detection in user-specified time windows. This semi-automated process will be done through all the participants and then ERPs' absolute amplitudes, latencies and peak-to-peak amplitudes are exported for each participant for a single channel of interest as an Excel spreadsheet.
+
+
+### Complexity & Entropy analysis
+`/resting_state/resting_entropy_complexity.ipynb` - importing clean resting state EEG (.fif) files, resampling to 256 Hz, calculating Lempel-Ziv complexity (LZC) and Multiscale Sample Entropy (MSE) and export the results as an Excel spreadsheet with measures calculated for all participants.
 
 ### Data visualisation
-`resting_data_visualisation.ipynb` (*not updated*) - reads all PSD Excel files and compares different conditions with each other using a statistical test of choice (currently only paired t-test and Wilcoxon signed-rank test), thereby giving information about statistically significant bandpower changes in various locations (regions and channels) between different conditions. Finally, various plotting functions can be used to plot the results. Also possible to import other measures to find correlation between the change of variables within timepoints; scatter plot function for Spearman or Pearson.
+`/resting_state/resting_data_visualisation.ipynb` (*outdated*) - reads all PSD Excel files and compares different conditions with each other using a statistical test of choice (currently only paired t-test and Wilcoxon signed-rank test), thereby giving information about statistically significant bandpower changes in various locations (regions and channels) between different conditions. Finally, various plotting functions can be used to plot the results. Also possible to import other measures to find correlation between the change of variables within timepoints; scatter plot function for Spearman or Pearson.
 
-`oddball_data_visualisation.ipynb` - importing clean auditory oddball task EEG (.fif) files, averaging the epochs (i.e., evoked signal), and average all the evoked signal across all participants (possible to exclude specific participants). The grand average will be plotted and can be done for comparing different conditions or timepoints.
+`/auditory_oddball/oddball_data_visualisation.ipynb` - importing clean auditory oddball task EEG (.fif) files, averaging the epochs (i.e., evoked signal), and average all the evoked signal across all participants (possible to exclude specific participants). The grand average will be plotted and can be done for comparing different conditions or timepoints.
+
+`/sart/sart_data_visualisation.ipynb` - importing clean SART EEG (.fif) files, averaging the epochs (i.e., evoked signal), and average all the evoked signal across all participants (possible to exclude specific participants). The grand average will be plotted and can be done for comparing different conditions or timepoints.
 
 
 ### TO-DO
-- Non-linear analysis (e.g., Higuchi fractal dimension)
-- Other time-domain waveform analysis etc
-- Restructure the project and create a package (DM if you could help!)
+- Other time-domain waveform analysis etc (e.g., using bycycle package)
+- Restructure the project and maybe turn into a package (DM if you could help!)
 
 
 ## Study notebooks
 Find in folder `/studies`. Different studies/publications that have used this pipeline for the EEG analysis and their corresponding notebooks.
 
-`OKTOS_rsEEG_classic_bp.ipynb` - Anijärv, Can et al. 2023. "Spectral changes of EEG following a 6-week low-dose oral ketamine treatment in adults with major depressive disorder and chronic suicidality". [Under review]
-
-`LEISURE_rsEEG_aperiodic_activity.ipynb` - Campbell et al. 2023. "1/f and Attention: Examining the Relationship Between Attention and Aperiodic Neural Activity in Resting-State EEG in Ageing". [Manuscript in progress]
-
-`LEISURE-LABS_rsEEG_aperiodic+iaf.ipynb` - Anijärv, Campbell et al. 2023. "Changes in Resting-State EEG Aperiodic 1/f Activity, Individual Alpha Frequency and Power, and Episodic Memory Performance in Healthy Adolescents and Older Adults". [Manuscript in progress]
-
-**Coming soon:**
-
-`LABS_rsEEG_classic_bp.ipynb`
-
-`OKTOS_aoEEG_erp_analysis.ipynb`
+### Published work
+`OKTOS_rsEEG_classic_bp.ipynb` - Anijärv et al. 2023. "Spectral Changes of EEG Following a 6-Week Low-Dose Oral Ketamine Treatment in Adults With Major Depressive Disorder and Chronic Suicidality". International Journal of Neuropsychopharmacology, Volume 26, Issue 4, April 2023, Pages 259–267, https://doi.org/10.1093/ijnp/pyad006
 
 ## Requirements
 The data processing and analysis is tested with Biosemi 32-channel EEG set. I recommend to create a [conda environment](https://www.anaconda.com/distribution/) with all the dependencies using the environment.yml file in this repository. However, down below you can see all the required libraries across parts of the pipeline in case you want to use only a specific notebook.
@@ -70,13 +71,19 @@ If you want to install all the necessary packages separately then these four ins
 - MNE
 - AutoReject
 
-### Spectral analysis:
+### Spectral analysis + ERP analysis:
 - MNE
 - specparam (fooof)
 - Pandas
 - NumPy
 - SciPy
 - Matplotlib
+
+### Complexity & Entropy analysis
+- MNE
+- Pandas
+- NumPy
+- neurokit2
 
 ### Data visualisation:
 - MNE
@@ -110,3 +117,7 @@ If you are using any specific study notebook, then additionally please add citat
 [8] J. D. Hunter, "Matplotlib: A 2D Graphics Environment", Computing in Science & Engineering, vol. 9, no. 3, pp. 90-95, 2007.
 
 [9] Donoghue T, Haller M, Peterson EJ, Varma P, Sebastian P, Gao R, Noto T, Lara AH, Wallis JD, Knight RT, Shestyuk A, Voytek B (2020). Parameterizing neural power spectra into periodic and aperiodic components. Nature Neuroscience, 23, 1655-1665. DOI: 10.1038/s41593-020-00744-x
+
+[10] Makowski, D., Pham, T., Lau, Z. J., Brammer, J. C., Lespinasse, F., Pham, H.,
+Schölzel, C., & Chen, S. A. (2021). NeuroKit2: A Python toolbox for neurophysiological signal processing.
+Behavior Research Methods, 53(4), 1689–1696. https://doi.org/10.3758/s13428-020-01516-y
