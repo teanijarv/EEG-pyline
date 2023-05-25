@@ -37,7 +37,7 @@ def find_all_peaks(evoked_obj, epochs, t_range=[-200, 800], thresh=None, subject
         print('max peaks\ntimes:',maxpeak_times,'mag:',maxpeak_mags)
         print('min peaks\ntimes:',minpeak_times,'mag:',minpeak_mags)
     if plot == True:
-        plt.figure(figsize=(8,3))
+        plt.figure(figsize=(8,3), dpi=100)
         plt.suptitle('All the detected peaks ({})'.format(subject_name))
         plt.xlabel('Time (ms)')
         plt.ylabel('Amplitude (uV)')
@@ -111,7 +111,7 @@ def identify_erps(evoked_obj, erp_wins, minpeak_times, minpeak_mags, maxpeak_tim
         print('Other peaks\n',not_erp_peaks)
 
     if plot == True:
-        plt.figure(figsize=(8,3))
+        plt.figure(figsize=(8,3), dpi=100)
         plt.suptitle('Event-related potentials ({})'.format(subject_name))
         plt.xlabel('Time (ms)')
         plt.ylabel('Amplitude (uV)')
@@ -171,7 +171,7 @@ def find_minmax_erp(evoked_obj, erp_peaks, erp_tochange, new_time_win, t_range=[
         print('ERPs\n',erp_peaks)
 
     if plot == True:
-        plt.figure(figsize=(8,3))
+        plt.figure(figsize=(8,3), dpi=100)
         plt.suptitle('Event-related potentials ({})'.format(subject_name))
         plt.xlabel('Time (ms)')
         plt.ylabel('Amplitude (uV)')
