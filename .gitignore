@@ -6,3 +6,4 @@ Results/
 .idea/
 .gitignore
 .DS_Store
+/temp

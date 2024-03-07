@@ -88,6 +88,9 @@ def artefact_rejection(filt, subjectname, epo_duration=5, verbose=True):
 
     if verbose==True: print('---\nEPOCHS AFTER AR\n')
     epochs_ar.average().plot()
-    epochs_ar.plot_image(title="GFP with AR ({})".format(subjectname))
+    fig, ax = plt.subplots(3, 1)
+    epochs_ar.plot_image(title="GFP with AR ({})".format(subjectname), fig=fig)
+    fig.savefig(f'temp/gfp_postar_{subjectname}.png')
+    plt.show()
 
     return epochs_ar
