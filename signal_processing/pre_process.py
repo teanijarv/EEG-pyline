@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # ========== Functions ==========
 def filter_raw_data(raw, filter_design, line_remove=None, eog_channels=None,
-                    plot_filt=False, savefig=False, verbose=True):
+                    plot_filt=False, savefig=False, verbose=False):
     """
     Apply FIR bandpass filter and remove EOG noise.
 
@@ -27,7 +27,7 @@ def filter_raw_data(raw, filter_design, line_remove=None, eog_channels=None,
     filt = raw.copy().load_data().filter(**filter_design, verbose=verbose)
 
     if plot_filt == True:
-        filter_params = mne.filter.create_filter(raw.get_data(),raw.info['sfreq'],**filter_design)
+        filter_params = mne.filter.create_filter(raw.get_data(),raw.info['sfreq'], verbose=verbose, **filter_design)
         
         freq_ideal = [0,filter_design['l_freq'],filter_design['l_freq'],
                       filter_design['h_freq'],filter_design['h_freq'],raw.info['sfreq']/2]
@@ -47,14 +47,14 @@ def filter_raw_data(raw, filter_design, line_remove=None, eog_channels=None,
     if eog_channels != None or eog_channels != False:
         if verbose==True: print('---\nAPPLYING SSP FOR EOG-REMOVAL\n')
         eog_projs, _ = mne.preprocessing.compute_proj_eog(filt,n_grad=0,n_mag=0,n_eeg=1,reject=None,
-                                                          no_proj=True,ch_name=eog_channels,verbose=verbose)
+                                                          no_proj=True,ch_name=eog_channels, verbose=verbose)
         filt.add_proj(eog_projs,remove_existing=True)
         filt.apply_proj()
         filt.drop_channels(eog_channels)
 
     return filt
 
-def artefact_rejection(filt, subjectname, epo_duration=5, verbose=True):
+def artefact_rejection(filt, subjectname, epo_duration=5, pltfig=False, savefig=False, verbose=False):
     """
     Convert Raw file to Epochs and conduct artefact rejection/augmentation on the signal.
 
@@ -68,29 +68,28 @@ def artefact_rejection(filt, subjectname, epo_duration=5, verbose=True):
     -------
     epochs: Epochs-type (MNE-Python) EEG file
     """
-    if verbose==True: print('---\nDIVIDING INTO EPOCHS\n')
     epochs = mne.make_fixed_length_epochs(filt, duration=epo_duration, preload=True, verbose=verbose)
+    len_epochs = len(epochs)
 
-    if verbose==True: print('---\nEPOCHS BEFORE AR\n')
-    epochs.average().plot()
-    epochs.plot_image(title="GFP without AR ({})".format(subjectname))
-
-    if verbose==True: print('---\nAPPLYING GLOBAL AR\n')
-    reject_criteria = get_rejection_threshold(epochs)
-    print('Dropping epochs with rejection threshold:',reject_criteria)
+    # global AR
+    reject_criteria = get_rejection_threshold(epochs, verbose=verbose)
     epochs.drop_bad(reject=reject_criteria, verbose=verbose)
-
-    if verbose==True: print('---\nAPPLYING LOCAL AR\n')
-    ar = AutoReject(thresh_method='random_search',random_state=1)
+    
+    # local AR
+    ar = AutoReject(thresh_method='random_search',random_state=1, verbose=verbose)
     ar.fit(epochs)
     epochs_ar, reject_log = ar.transform(epochs, return_log=True)
-    reject_log.plot('horizontal')
+    if pltfig: reject_log.plot('horizontal')
 
-    if verbose==True: print('---\nEPOCHS AFTER AR\n')
-    epochs_ar.average().plot()
-    fig, ax = plt.subplots(3, 1)
-    epochs_ar.plot_image(title="GFP with AR ({})".format(subjectname), fig=fig)
-    fig.savefig(f'temp/gfp_postar_{subjectname}.png')
-    plt.show()
+    # print warning if less than half the epochs remaining
+    print(f"ALL GOOD! more than half of epochs after AR ({len(epochs_ar)}/{len_epochs})")
+    if len(epochs_ar) < len(epochs)/2:
+        print(f"WARNING! less than half epochs after AR ({len(epochs_ar)}/{len_epochs})")
+
+    # plot GFP and save
+    fig, _ = plt.subplots(3, 1)
+    epochs_ar.plot_image(title=f"GFP with AR ({subjectname})", fig=fig, show=pltfig, clear=True)
+    if savefig: fig.savefig(f'temp/gfp_postar_{subjectname}.png')
+    plt.close(fig=fig)
 
     return epochs_ar
