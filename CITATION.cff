@@ -14,6 +14,10 @@ authors:
     family-names: Anijärv
     email: toomaserikanijarv@gmail.com
     orcid: 'https://orcid.org/0000-0002-3650-4230'
+  - given-names: Alicia J.
+    family-names: Campbell
+    email: aliciajaynecampbell@gmail.com
+    orcid: 'https://orcid.org/0009-0001-9286-3844'
 identifiers:
   - type: doi
     value: 10.5281/zenodo.7444821
