@@ -54,6 +54,8 @@ Find in folder `/studies`. Different studies/publications that have used this pi
 ### Published work
 `OKTOS_rsEEG_classic_bp.ipynb` - Anijärv et al. 2023. "Spectral Changes of EEG Following a 6-Week Low-Dose Oral Ketamine Treatment in Adults With Major Depressive Disorder and Chronic Suicidality". International Journal of Neuropsychopharmacology, Volume 26, Issue 4, April 2023, Pages 259–267, https://doi.org/10.1093/ijnp/pyad006
 
+`Campbell_Resting_EEG_Sustained_Attention_Healthy_Ageing_Cross_Sectional_LEISURE.ipynb` - Campbell et al., 2024, Resting-state EEG correlates of sustained attention in healthy ageing: Cross-sectional findings from the LEISURE study. Neurobiology of Aging, Volume 144, September 2023, Pages 68–77, https://doi.org/10.1016/j.neurobiolaging.2024.09.005
+
 ## Requirements
 The data processing and analysis is tested with Biosemi 32-channel EEG set. I recommend to create a [conda environment](https://www.anaconda.com/distribution/) with all the dependencies using the environment.yml file in this repository. However, down below you can see all the required libraries across parts of the pipeline in case you want to use only a specific notebook.
 
