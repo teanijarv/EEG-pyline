@@ -1,10 +1,8 @@
 __pycache__/
 Data/
-HBA_data/
-HBA_results/
 Results/
 .idea/
 .gitignore
 .DS_Store
 /temp
-/studies/working
+/studies/drafts
