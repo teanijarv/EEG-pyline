@@ -1,7 +1,7 @@
 # EEG-pyline: EEG pipeline in Python
 [![DOI](https://zenodo.org/badge/495300654.svg)](https://zenodo.org/badge/latestdoi/495300654)
 
-This is an EEG pipeline for resting and task EEG pre-processing and analyses used at the UniSC's Thompson Institute created by Toomas Erik Anijärv.
+This is an EEG pipeline for resting and task EEG pre-processing and analyses used at the UniSC's Thompson Institute created by Toomas Erik Anijärv, and updated/maintained by Alicia J. Campbell
 
 The main aim for creating this pipeline was to make EEG analysis in Python easier for other researchers who are not too familiar with programming but also do not want to use other commercial blackbox-style software. Using ready-made Jupyter notebooks, it is easy to get started with EEG data pre-processing, spectral analysis, and ERP analysis. 
 
