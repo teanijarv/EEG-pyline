@@ -82,9 +82,10 @@ def artefact_rejection(filt, subjectname, epo_duration=5, pltfig=False, savefig=
     if pltfig: reject_log.plot('horizontal')
 
     # print warning if less than half the epochs remaining
-    print(f"ALL GOOD! more than half of epochs after AR ({len(epochs_ar)}/{len_epochs})")
     if len(epochs_ar) < len(epochs)/2:
         print(f"WARNING! less than half epochs after AR ({len(epochs_ar)}/{len_epochs})")
+    else:
+        print(f"ALL GOOD! more than half of epochs after AR ({len(epochs_ar)}/{len_epochs})")
 
     # plot GFP and save
     fig, _ = plt.subplots(3, 1)
